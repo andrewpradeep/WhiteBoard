@@ -1,6 +1,7 @@
 import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
 import {
     BoardObject,
+    BoardObjectDefaultprops,
     BoardShapes,
     CircleObject,
     SelectedObjectDetail,
@@ -13,6 +14,8 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
     width,
     height,
     className = "",
+    selectedShape,
+    onShapeAdded,
 }) => {
     const [boardObjectList, setBoardObjectList] = useState<BoardObject[]>([
         {
@@ -172,7 +175,40 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         }
     };
 
+    const addShapesToCanvas: MouseEventHandler<HTMLCanvasElement> = (event) => {
+        if (selectedShape !== null) {
+            const newObject: BoardObjectDefaultprops = {
+                x: event.nativeEvent.offsetX,
+                y: event.nativeEvent.offsetY,
+                type: selectedShape,
+            };
+            const boardObjectListCopy = [...boardObjectList];
+
+            switch (selectedShape) {
+                case BoardShapes.SQUARE:
+                    boardObjectListCopy.push({
+                        width: 60,
+                        height: 60,
+                        ...newObject,
+                    });
+                    break;
+                case BoardShapes.CIRCLE:
+                    boardObjectListCopy.push({ radius: 30, ...newObject });
+                    break;
+                default:
+                    return;
+            }
+
+            setBoardObjectList(boardObjectListCopy);
+            onShapeAdded();
+        }
+    };
+
     const handleMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
+        if (selectedShape !== null) {
+            addShapesToCanvas(event);
+            return;
+        }
         const position = getSelectedObject(
             event.nativeEvent.offsetX,
             event.nativeEvent.offsetY
@@ -208,7 +244,9 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
             <canvas
                 width={width}
                 height={height}
-                className={className}
+                className={`${
+                    selectedShape ? "click-pointer" : ""
+                } ${className}`}
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}

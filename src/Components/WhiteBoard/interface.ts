@@ -19,6 +19,8 @@ export interface WhiteBoardProps {
     className?: string;
     width: number;
     height: number;
+    selectedShape: BoardShapes | null;
+    onShapeAdded: () => void;
 }
 
 export interface SelectedObjectDetail {

@@ -29,3 +29,34 @@
         height: 2.5rem;
     }
 }
+
+.shape-list{
+    position: fixed;
+    width: 10rem;
+    height: auto;
+    left: 6rem;
+    top: 12rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: white;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 5px;
+    box-shadow: 0px 8px 32px rgba(5, 0, 56, 0.08);
+    display: flex;
+
+    .icon-container{
+        
+        display: inline-block;
+        padding: auto;
+
+        &:hover{
+            background-color: #d9e0ff;
+        }
+
+        .side-bar-icon{
+            width: 2.5rem;
+            height: 2.5rem;
+            margin: 1rem;
+        }
+    }
+}
