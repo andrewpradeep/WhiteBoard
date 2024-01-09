@@ -1,43 +1,50 @@
 import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
+import { SelectedObjectDetail, WhiteBoardProps } from "./interface";
+import "./index.css";
 import {
+    BoardMode,
     BoardObject,
     BoardObjectDefaultprops,
     BoardShapes,
     CircleObject,
-    SelectedObjectDetail,
+    LineObject,
+    PlotPoint,
     SquareObject,
-    WhiteBoardProps,
-} from "./interface";
-import "./index.css";
+} from "../../Contracts/WhiteBoard";
+import { useSelector } from "react-redux";
+import { RootState } from "../../rootReducer";
+import {
+    addWhiteBoardObjectAction,
+    resetSelectedShapeAction,
+    setBoardMode,
+    setWhiteBoardAction,
+} from "../../Store/WhiteBoardStore";
+import { useDispatch } from "react-redux";
+import { drawShapes, getDistanceOfPoints } from "../../Utils/WhiteBoard";
 
 const WhiteBoard: React.FC<WhiteBoardProps> = ({
     width,
     height,
     className = "",
-    selectedShape,
-    onShapeAdded,
 }) => {
-    const [boardObjectList, setBoardObjectList] = useState<BoardObject[]>([
-        {
-            x: 25,
-            y: 25,
-            width: 60,
-            height: 60,
-            type: BoardShapes.SQUARE,
-        },
-        {
-            x: 110,
-            y: 25,
-            radius: 30,
-            type: BoardShapes.CIRCLE,
-        },
-    ]);
+    const dispatch = useDispatch();
+    const { boardObjectList, selectedShape, boardMode } = useSelector(
+        (state: RootState) => {
+            return {
+                boardMode: state.WhiteBoardStore.boardMode,
+                boardObjectList:
+                    state.WhiteBoardStore.currentBoard?.ObjectList || [],
+                selectedShape: state.WhiteBoardStore.selectedShape,
+            };
+        }
+    );
     const [canvasContext, setCanvasContext] = useState<
         CanvasRenderingContext2D | undefined | null
     >();
 
     const [selObjectDetail, setSelObjectDetail] =
         useState<SelectedObjectDetail | null>();
+    const [isDraggingLine, setIsDraggingLine] = useState(false);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -86,52 +93,13 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         drawBackGround();
 
         if (boardObjectList.length && canvasContext) {
-            boardObjectList.forEach((boardObject) => {
+            boardObjectList.forEach((boardObject: BoardObject) => {
                 canvasContext?.beginPath();
                 canvasContext.strokeStyle = "#000";
-                drawShapes(boardObject);
+                drawShapes(boardObject, canvasContext);
                 canvasContext?.closePath();
             });
         }
-    };
-
-    const drawShapes = (boardObject: BoardObject) => {
-        switch (boardObject.type) {
-            case BoardShapes.SQUARE:
-                drawRect(boardObject as SquareObject);
-                break;
-            case BoardShapes.CIRCLE:
-                drawCircle(boardObject as CircleObject);
-                break;
-            default:
-                return;
-        }
-    };
-
-    const drawRect = (boardObject: SquareObject) => {
-        canvasContext?.strokeRect(
-            boardObject.x,
-            boardObject.y,
-            boardObject.width,
-            boardObject.height
-        );
-        canvasContext?.strokeRect(
-            boardObject.x,
-            boardObject.y,
-            boardObject.width,
-            boardObject.height
-        );
-    };
-
-    const drawCircle = (boardObject: CircleObject) => {
-        canvasContext?.arc(
-            boardObject.x,
-            boardObject.y,
-            boardObject.radius,
-            0,
-            2 * Math.PI
-        );
-        canvasContext?.stroke();
     };
 
     const getSelectedObject = (clickX: number, clickY: number) => {
@@ -170,6 +138,20 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
                     clickY < tempObject.y + tempObject.radius
                 );
             }
+            case BoardShapes.LINE: {
+                const tempObject = boardObject as LineObject;
+
+                return (
+                    (clickX > tempObject.x - 10 &&
+                        clickX < tempObject.x + 10 &&
+                        clickY > tempObject.y - 10 &&
+                        clickY < tempObject.y + 10) ||
+                    (clickX > tempObject.dx - 10 &&
+                        clickX < tempObject.dx + 10 &&
+                        clickY > tempObject.dy - 10 &&
+                        clickY < tempObject.dy + 10)
+                );
+            }
             default:
                 return false;
         }
@@ -182,60 +164,126 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
                 y: event.nativeEvent.offsetY,
                 type: selectedShape,
             };
-            const boardObjectListCopy = [...boardObjectList];
+            let tempBoardObject = null;
 
             switch (selectedShape) {
                 case BoardShapes.SQUARE:
-                    boardObjectListCopy.push({
+                    tempBoardObject = {
                         width: 60,
                         height: 60,
                         ...newObject,
-                    });
+                    };
                     break;
                 case BoardShapes.CIRCLE:
-                    boardObjectListCopy.push({ radius: 30, ...newObject });
+                    tempBoardObject = { radius: 30, ...newObject };
                     break;
                 default:
                     return;
             }
 
-            setBoardObjectList(boardObjectListCopy);
-            onShapeAdded();
+            dispatch(addWhiteBoardObjectAction(tempBoardObject));
+            dispatch(resetSelectedShapeAction());
         }
     };
 
+    const addLineToCanvas: MouseEventHandler<HTMLCanvasElement> = (event) => {
+        setIsDraggingLine(true);
+        const newObject: LineObject = {
+            x: event.nativeEvent.offsetX,
+            y: event.nativeEvent.offsetY,
+            type: BoardShapes.LINE,
+            dx: event.nativeEvent.offsetX,
+            dy: event.nativeEvent.offsetY,
+        };
+        dispatch(addWhiteBoardObjectAction(newObject));
+    };
+
     const handleMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
-        if (selectedShape !== null) {
+        if (boardMode === BoardMode.ADD_SHAPE) {
             addShapesToCanvas(event);
             return;
+        } else if (boardMode === BoardMode.ADD_LINE) {
+            addLineToCanvas(event);
+            return;
         }
+
         const position = getSelectedObject(
             event.nativeEvent.offsetX,
             event.nativeEvent.offsetY
         );
         if (position !== null) {
-            const boardObject = boardObjectList[position];
+            const boardObject = structuredClone(boardObjectList[position]);
             setSelObjectDetail({
                 position,
                 lastX: event.nativeEvent.offsetX - boardObject.x,
                 lastY: event.nativeEvent.offsetY - boardObject.y,
             });
+
+            if (boardObject.type === BoardShapes.LINE) {
+                const tempObject = boardObject as LineObject;
+                tempObject.draggingFromDestination =
+                    getDistanceOfPoints(
+                        { x: tempObject.x, y: tempObject.y },
+                        {
+                            x: event.nativeEvent.offsetX,
+                            y: event.nativeEvent.offsetY,
+                        }
+                    ) >
+                    getDistanceOfPoints(
+                        { x: tempObject.dx, y: tempObject.dy },
+                        {
+                            x: event.nativeEvent.offsetX,
+                            y: event.nativeEvent.offsetY,
+                        }
+                    );
+
+                const boardList = [...boardObjectList];
+                boardList[position] = tempObject;
+                dispatch(setWhiteBoardAction(boardList));
+            }
         }
     };
 
     const handleMouseMove: MouseEventHandler<HTMLCanvasElement> = (event) => {
-        if (selObjectDetail) {
-            const boardObject = boardObjectList[selObjectDetail.position];
-            boardObject.x = event.nativeEvent.offsetX - selObjectDetail.lastX;
-            boardObject.y = event.nativeEvent.offsetY - selObjectDetail.lastY;
-
+        const boardList = [...boardObjectList];
+        if (boardMode === BoardMode.ADD_LINE && isDraggingLine) {
+            const lastObject = structuredClone(boardList.pop()) as LineObject;
+            lastObject.dx = event.nativeEvent.offsetX;
+            lastObject.dy = event.nativeEvent.offsetY;
+            boardList.push(lastObject);
+        } else if (selObjectDetail) {
+            const boardObject = structuredClone(
+                boardObjectList[selObjectDetail.position]
+            );
             const boardList = [...boardObjectList];
-            boardList[selObjectDetail.position] = boardObject;
-            setBoardObjectList(boardList);
+
+            if (
+                boardObject.type === BoardShapes.LINE &&
+                (boardObject as LineObject).draggingFromDestination
+            ) {
+                const tempObject = boardObject as LineObject;
+
+                tempObject.dx = event.nativeEvent.offsetX;
+                tempObject.dy = event.nativeEvent.offsetY;
+
+                boardList[selObjectDetail.position] = tempObject;
+            } else {
+                boardObject.x =
+                    event.nativeEvent.offsetX - selObjectDetail.lastX;
+                boardObject.y =
+                    event.nativeEvent.offsetY - selObjectDetail.lastY;
+                boardList[selObjectDetail.position] = boardObject;
+            }
         }
+
+        dispatch(setWhiteBoardAction(boardList));
     };
 
     const handleMouseUp: MouseEventHandler<HTMLCanvasElement> = () => {
+        if (boardMode === BoardMode.ADD_LINE) {
+            dispatch(setBoardMode(BoardMode.SELECTION));
+            setIsDraggingLine(false);
+        }
         setSelObjectDetail(null);
     };
 
@@ -245,7 +293,7 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
                 width={width}
                 height={height}
                 className={`${
-                    selectedShape ? "click-pointer" : ""
+                    boardMode !== BoardMode.SELECTION ? "click-pointer" : ""
                 } ${className}`}
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
