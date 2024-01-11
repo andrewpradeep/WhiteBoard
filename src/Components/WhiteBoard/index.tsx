@@ -254,7 +254,6 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
             const boardObject = structuredClone(
                 boardObjectList[selObjectDetail.position]
             );
-            const boardList = [...boardObjectList];
 
             if (
                 boardObject.type === BoardShapes.LINE &&
