@@ -8,7 +8,6 @@ import {
     BoardShapes,
     CircleObject,
     LineObject,
-    PlotPoint,
     SquareObject,
 } from "../../Contracts/WhiteBoard";
 import { useSelector } from "react-redux";
