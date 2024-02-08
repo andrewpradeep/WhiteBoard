@@ -9,3 +9,5 @@ export interface SelectedObjectDetail {
     lastY: number;
     position: number;
 }
+
+

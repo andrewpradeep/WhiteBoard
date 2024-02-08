@@ -54,7 +54,7 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
 
     useEffect(() => {
         if (canvasContext) {
-            drawObjects();
+            window.requestAnimationFrame(drawObjects);
         }
     }, [canvasContext, boardObjectList]);
 
@@ -156,11 +156,11 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         }
     };
 
-    const addShapesToCanvas: MouseEventHandler<HTMLCanvasElement> = (event) => {
+    const addShapesToCanvas = (pageX: number, pageY: number) => {
         if (selectedShape !== null) {
             const newObject: BoardObjectDefaultprops = {
-                x: event.nativeEvent.offsetX,
-                y: event.nativeEvent.offsetY,
+                x: pageX,
+                y: pageY,
                 type: selectedShape,
             };
             let tempBoardObject = null;
@@ -185,37 +185,36 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         }
     };
 
-    const addLineToCanvas: MouseEventHandler<HTMLCanvasElement> = (event) => {
+    const addLineToCanvas = (pageX: number, pageY: number) => {
         setIsDraggingLine(true);
         const newObject: LineObject = {
-            x: event.nativeEvent.offsetX,
-            y: event.nativeEvent.offsetY,
+            x: pageX,
+            y: pageY,
             type: BoardShapes.LINE,
-            dx: event.nativeEvent.offsetX,
-            dy: event.nativeEvent.offsetY,
+            dx: pageX,
+            dy: pageY,
         };
         dispatch(addWhiteBoardObjectAction(newObject));
     };
 
     const handleMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
+        const { pageX, pageY } = event.nativeEvent;
         if (boardMode === BoardMode.ADD_SHAPE) {
-            addShapesToCanvas(event);
+            addShapesToCanvas(pageX, pageY);
             return;
         } else if (boardMode === BoardMode.ADD_LINE) {
-            addLineToCanvas(event);
+            addLineToCanvas(pageX, pageY);
             return;
         }
 
-        const position = getSelectedObject(
-            event.nativeEvent.offsetX,
-            event.nativeEvent.offsetY
-        );
+        const position = getSelectedObject(pageX, pageY);
         if (position !== null) {
+            event.preventDefault();
             const boardObject = structuredClone(boardObjectList[position]);
             setSelObjectDetail({
                 position,
-                lastX: event.nativeEvent.offsetX - boardObject.x,
-                lastY: event.nativeEvent.offsetY - boardObject.y,
+                lastX: pageX - boardObject.x,
+                lastY: pageY - boardObject.y,
             });
 
             if (boardObject.type === BoardShapes.LINE) {
@@ -224,15 +223,15 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
                     getDistanceOfPoints(
                         { x: tempObject.x, y: tempObject.y },
                         {
-                            x: event.nativeEvent.offsetX,
-                            y: event.nativeEvent.offsetY,
+                            x: pageX,
+                            y: pageY,
                         }
                     ) >
                     getDistanceOfPoints(
                         { x: tempObject.dx, y: tempObject.dy },
                         {
-                            x: event.nativeEvent.offsetX,
-                            y: event.nativeEvent.offsetY,
+                            x: pageX,
+                            y: pageY,
                         }
                     );
 
@@ -244,11 +243,16 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
     };
 
     const handleMouseMove: MouseEventHandler<HTMLCanvasElement> = (event) => {
+        event.preventDefault();
+        handleMove(event.nativeEvent.pageX, event.nativeEvent.pageY);
+    };
+
+    const handleMove = (pageX: number, pageY: number) => {
         const boardList = [...boardObjectList];
         if (boardMode === BoardMode.ADD_LINE && isDraggingLine) {
             const lastObject = structuredClone(boardList.pop()) as LineObject;
-            lastObject.dx = event.nativeEvent.offsetX;
-            lastObject.dy = event.nativeEvent.offsetY;
+            lastObject.dx = pageX;
+            lastObject.dy = pageY;
             boardList.push(lastObject);
         } else if (selObjectDetail) {
             const boardObject = structuredClone(
@@ -261,15 +265,13 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
             ) {
                 const tempObject = boardObject as LineObject;
 
-                tempObject.dx = event.nativeEvent.offsetX;
-                tempObject.dy = event.nativeEvent.offsetY;
+                tempObject.dx = pageX;
+                tempObject.dy = pageY;
 
                 boardList[selObjectDetail.position] = tempObject;
             } else {
-                boardObject.x =
-                    event.nativeEvent.offsetX - selObjectDetail.lastX;
-                boardObject.y =
-                    event.nativeEvent.offsetY - selObjectDetail.lastY;
+                boardObject.x = pageX - selObjectDetail.lastX;
+                boardObject.y = pageY - selObjectDetail.lastY;
                 boardList[selObjectDetail.position] = boardObject;
             }
         }
@@ -277,7 +279,7 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         dispatch(setWhiteBoardAction(boardList));
     };
 
-    const handleMouseUp: MouseEventHandler<HTMLCanvasElement> = () => {
+    const handleMouseUp = () => {
         if (boardMode === BoardMode.ADD_LINE) {
             dispatch(setBoardMode(BoardMode.SELECTION));
             setIsDraggingLine(false);
@@ -290,13 +292,16 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
             <canvas
                 width={width}
                 height={height}
-                className={`${
-                    boardMode !== BoardMode.SELECTION ? "click-pointer" : ""
-                } ${className}`}
+                className={`white-board-canvas ${
+                    boardMode !== BoardMode.SELECTION
+                        ? "click-pointer touch-off"
+                        : ""
+                } ${className} ${selObjectDetail ? "touch-off" : ""}`}
                 ref={canvasRef}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
+                onPointerDown={handleMouseDown}
+                onPointerMove={handleMouseMove}
+                onPointerCancel={handleMouseUp}
+                onPointerUp={handleMouseUp}
             ></canvas>
         </>
     );

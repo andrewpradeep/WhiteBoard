@@ -1,3 +1,11 @@
+
+.white-board-canvas{
+    touch-action: pinch-zoom;
+}
 .click-pointer{
     cursor: crosshair;
+}
+
+.touch-off{
+    touch-action: none;
 }
