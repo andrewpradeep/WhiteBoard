@@ -19,3 +19,11 @@ RoadMap
 3. Delete
 4. Add Text
 5. draw
+
+
+Update: 
+ I have decided to go with a rectangular or box approach for each component except for lines
+
+ Line will be separate component since it behaviour is completely different
+ 
+ 
