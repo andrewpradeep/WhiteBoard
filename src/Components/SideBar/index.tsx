@@ -17,6 +17,9 @@ import ShapeList from "./Organisms/ShapeList";
 const SideBar: React.FC = () => {
     const dispatch = useDispatch();
     const [isShapeListVisible, setShapeListVisible] = useState(false);
+    const handlePointerClick = ()=>{
+        dispatch(setBoardMode(BoardMode.SELECTION));
+    }
 
     const handleShapeSelection = (shape: BoardShapes) => {
         setShapeListVisible(false);
@@ -34,7 +37,7 @@ const SideBar: React.FC = () => {
     return (
         <>
             <div className="side-bar">
-                <span className="icon-container" onClick={() => {}}>
+                <span className="icon-container" onClick={handlePointerClick}>
                     <Icon srcUrl={pointerIcon} className="side-bar-icon" />
                 </span>
                 <span
