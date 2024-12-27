@@ -6,7 +6,6 @@ import {
     BoardObject,
     BoardObjectDefaultprops,
     BoardShapes,
-    CircleObject,
     LineObject,
     ScribbleObject,
 } from "../../Contracts/WhiteBoard";
