@@ -1,7 +1,9 @@
 export enum BoardShapes {
     SQUARE = "square",
+    RECT = "rect",
     CIRCLE = "circle",
     LINE = "line",
+    SCRIBBLE = "scribble"
 }
 
 export interface BoardObjectDefaultprops {
@@ -10,7 +12,7 @@ export interface BoardObjectDefaultprops {
     type: BoardShapes;
 }
 
-export interface SquareObject extends BoardObjectDefaultprops {
+export interface RectObject extends BoardObjectDefaultprops {
     width: number;
     height: number;
 }
@@ -26,7 +28,11 @@ export interface LineObject extends BoardObjectDefaultprops {
     draggingFromDestination?: boolean;
 }
 
-export type BoardObject = SquareObject | CircleObject | LineObject;
+export interface ScribbleObject extends BoardObjectDefaultprops {
+    path:PlotPoint[];
+}
+
+export type BoardObject = RectObject | CircleObject | LineObject | ScribbleObject;
 
 export interface Board {
     ObjectList: BoardObject[];
@@ -36,6 +42,7 @@ export enum BoardMode {
     SELECTION = "selection",
     ADD_SHAPE = "add_shape",
     ADD_LINE = "add_line",
+    SCRIBBLE = "scribble"
 }
 
 export interface PlotPoint {

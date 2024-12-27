@@ -2,6 +2,7 @@ import Icon from "../Icon";
 import "./index.css";
 import SquareIcon from "../../assets/utility/shapes.svg";
 import LineIcon from "../../assets/utility/arrow.svg";
+import PenIcon from "../../assets/utility/pen.svg";
 import pointerIcon from "../../assets/utility/pointer.svg";
 
 import { useState } from "react";
@@ -26,6 +27,10 @@ const SideBar: React.FC = () => {
         dispatch(setBoardMode(BoardMode.ADD_LINE));
     };
 
+    const handleScribbleClick = ()=>{
+        dispatch(setBoardMode(BoardMode.SCRIBBLE));
+    }
+
     return (
         <>
             <div className="side-bar">
@@ -43,6 +48,10 @@ const SideBar: React.FC = () => {
 
                 <span className="icon-container" onClick={handleLineClick}>
                     <Icon srcUrl={LineIcon} className="side-bar-icon" />
+                </span>
+
+                <span className="icon-container" onClick={handleScribbleClick}>
+                    <Icon srcUrl={PenIcon} className="side-bar-icon" />
                 </span>
             </div>
 

@@ -8,7 +8,7 @@ import {
     BoardShapes,
     CircleObject,
     LineObject,
-    SquareObject,
+    ScribbleObject,
 } from "../../Contracts/WhiteBoard";
 import { useSelector } from "react-redux";
 import { RootState } from "../../rootReducer";
@@ -19,7 +19,7 @@ import {
     setWhiteBoardAction,
 } from "../../Store/WhiteBoardStore";
 import { useDispatch } from "react-redux";
-import { drawShapes, getDistanceOfPoints } from "../../Utils/WhiteBoard";
+import { drawShapes, getDistanceOfPoints, isBoardObjectSelected } from "../../Utils/WhiteBoard";
 
 const WhiteBoard: React.FC<WhiteBoardProps> = ({
     width,
@@ -104,57 +104,14 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
     const getSelectedObject = (clickX: number, clickY: number) => {
         for (let i = 0; i < boardObjectList.length; i++) {
             const boardObject = boardObjectList[i];
-            if (isObjectSelected(boardObject, clickX, clickY)) {
+            if (isBoardObjectSelected(boardObject, clickX, clickY)) {
                 return i;
             }
         }
         return null;
     };
 
-    const isObjectSelected = (
-        boardObject: BoardObject,
-        clickX: number,
-        clickY: number
-    ) => {
-        switch (boardObject.type) {
-            case BoardShapes.SQUARE: {
-                // eslint-disable-next-line no-case-declarations
-                const tempObject = boardObject as SquareObject;
-                return (
-                    clickX > tempObject.x &&
-                    clickX < tempObject.x + tempObject.width &&
-                    clickY > tempObject.y &&
-                    clickY < tempObject.y + tempObject.height
-                );
-            }
-            case BoardShapes.CIRCLE: {
-                // eslint-disable-next-line no-case-declarations
-                const tempObject = boardObject as CircleObject;
-                return (
-                    clickX > tempObject.x - tempObject.radius &&
-                    clickX < tempObject.x + tempObject.radius &&
-                    clickY > tempObject.y - tempObject.radius &&
-                    clickY < tempObject.y + tempObject.radius
-                );
-            }
-            case BoardShapes.LINE: {
-                const tempObject = boardObject as LineObject;
-
-                return (
-                    (clickX > tempObject.x - 10 &&
-                        clickX < tempObject.x + 10 &&
-                        clickY > tempObject.y - 10 &&
-                        clickY < tempObject.y + 10) ||
-                    (clickX > tempObject.dx - 10 &&
-                        clickX < tempObject.dx + 10 &&
-                        clickY > tempObject.dy - 10 &&
-                        clickY < tempObject.dy + 10)
-                );
-            }
-            default:
-                return false;
-        }
-    };
+    
 
     const addShapesToCanvas = (pageX: number, pageY: number) => {
         if (selectedShape !== null) {
@@ -163,10 +120,10 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
                 y: pageY,
                 type: selectedShape,
             };
-            let tempBoardObject = null;
+            let tempBoardObject:BoardObject | null = null;
 
             switch (selectedShape) {
-                case BoardShapes.SQUARE:
+                case BoardShapes.RECT:
                     tempBoardObject = {
                         width: 60,
                         height: 60,
@@ -197,6 +154,18 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         dispatch(addWhiteBoardObjectAction(newObject));
     };
 
+    const addScribbleToCanvas = (pageX: number, pageY: number) => {
+        setIsDraggingLine(true);
+        const newObject:ScribbleObject  = {
+            x: pageX,
+            y: pageY,
+            type: BoardShapes.SCRIBBLE,
+            path:[]
+            
+        };
+        dispatch(addWhiteBoardObjectAction(newObject));
+    };
+
     const handleMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
         const { pageX, pageY } = event.nativeEvent;
         if (boardMode === BoardMode.ADD_SHAPE) {
@@ -205,6 +174,10 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         } else if (boardMode === BoardMode.ADD_LINE) {
             addLineToCanvas(pageX, pageY);
             return;
+        }
+        else if(boardMode === BoardMode.SCRIBBLE)
+        {
+            addScribbleToCanvas(pageX,pageY);
         }
 
         const position = getSelectedObject(pageX, pageY);
@@ -254,7 +227,14 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
             lastObject.dx = pageX;
             lastObject.dy = pageY;
             boardList.push(lastObject);
-        } else if (selObjectDetail) {
+        }
+        else if(boardMode=== BoardMode.SCRIBBLE && isDraggingLine)
+        {
+            const lastObject = structuredClone(boardList.pop()) as ScribbleObject;
+            lastObject.path.push({x:pageX,y:pageY});
+            boardList.push(lastObject);
+        }
+         else if (selObjectDetail) {
             const boardObject = structuredClone(
                 boardObjectList[selObjectDetail.position]
             );
@@ -283,6 +263,10 @@ const WhiteBoard: React.FC<WhiteBoardProps> = ({
         if (boardMode === BoardMode.ADD_LINE) {
             dispatch(setBoardMode(BoardMode.SELECTION));
             setIsDraggingLine(false);
+        }
+        else if(boardMode === BoardMode.SCRIBBLE)
+        {
+                setIsDraggingLine(false);
         }
         setSelObjectDetail(null);
     };

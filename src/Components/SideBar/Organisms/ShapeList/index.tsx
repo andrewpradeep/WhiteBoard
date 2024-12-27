@@ -17,7 +17,7 @@ const ShapeList: React.FC<ShapeListProps> = ({ clickOutside, onSelection }) => {
             <span
                 className="icon-container"
                 onClick={() => {
-                    onSelection(BoardShapes.SQUARE);
+                    onSelection(BoardShapes.RECT);
                 }}
             >
                 <Icon srcUrl={SquareLogo} className="side-bar-icon" />
