@@ -1,11 +1,11 @@
 import { useRef } from "react";
 
-import { BoardShapes } from "../../../../Contracts/WhiteBoard";
+import { IBoardShapes } from "../../../../Contracts/WhiteBoard";
 import Icon from "../../../Icon";
-import useClickOutside from "../../../../Hooks/useClickOutside";
 import CircleLogo from "../../../../assets/utility/circle.svg";
 import SquareLogo from "../../../../assets/utility/shapes.svg";
 import { ShapeListProps } from "./interface";
+import useClickOutside from "../../../../Hooks/useClickOutside";
 
 const ShapeList: React.FC<ShapeListProps> = ({ clickOutside, onSelection }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -17,7 +17,7 @@ const ShapeList: React.FC<ShapeListProps> = ({ clickOutside, onSelection }) => {
             <span
                 className="icon-container"
                 onClick={() => {
-                    onSelection(BoardShapes.RECT);
+                    onSelection(IBoardShapes.RECT);
                 }}
             >
                 <Icon srcUrl={SquareLogo} className="side-bar-icon" />
@@ -25,7 +25,7 @@ const ShapeList: React.FC<ShapeListProps> = ({ clickOutside, onSelection }) => {
             <span
                 className="icon-container"
                 onClick={() => {
-                    onSelection(BoardShapes.CIRCLE);
+                    onSelection(IBoardShapes.CIRCLE);
                 }}
             >
                 <Icon srcUrl={CircleLogo} className="side-bar-icon" />

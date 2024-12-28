@@ -1,6 +1,6 @@
-import { BoardShapes } from "../../../../Contracts/WhiteBoard";
+import { IBoardShapes } from "../../../../Contracts/WhiteBoard";
 
-export interface ShapeListProps {
+export interface IShapeListProps {
     clickOutside: () => void;
-    onSelection: (shape: BoardShapes) => void;
+    onSelection: (shape: IBoardShapes) => void;
 }

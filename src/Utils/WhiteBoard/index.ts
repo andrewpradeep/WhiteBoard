@@ -1,88 +1,48 @@
 import {
-    BoardObject,
-    BoardShapes,
-    CircleObject,
-    LineObject,
-    PlotPoint,
-    RectObject,
-    ScribbleObject,
+    IBoardObject,
+    IBoardShapes,
+    ICircleObject,
+    ILineObject,
+    IPlotPoint,
+    IRectObject,
+    IScribbleObject,
 } from "../../Contracts/WhiteBoard";
 
-export const drawShapes = (
-    boardObject: BoardObject,
-    canvasContext: CanvasRenderingContext2D
-) => {
-    switch (boardObject.type) {
-        case BoardShapes.RECT:
-            drawRect(boardObject as RectObject, canvasContext);
-            break;
-        case BoardShapes.CIRCLE:
-            drawCircle(boardObject as CircleObject, canvasContext);
-            break;
-        case BoardShapes.LINE:
-            drawLine(boardObject as LineObject, canvasContext);
-            break;
-        case BoardShapes.SCRIBBLE:
-            drawScribble(boardObject as ScribbleObject,canvasContext);
-            break;
-        default:
-            return;
+
+
+
+
+export const drawBackGround = (canvasContext:CanvasRenderingContext2D | undefined | null,canvasRef:HTMLCanvasElement | null) => {
+    for (
+        let i = 0;
+        i <= (canvasRef?.width as number);
+        i = i + 100
+    ) {
+        for (
+            let j = 0;
+            j <= (canvasRef?.height as number);
+            j = j + 100
+        ) {
+            if (canvasContext) {
+                canvasContext?.beginPath();
+                canvasContext.strokeStyle = "rgba(0,0,0,0.1)";
+                canvasContext?.strokeRect(i, j, 100, 100);
+                canvasContext?.closePath();
+            }
+        }
     }
 };
-
-const drawRect = (
-    boardObject: RectObject,
-    canvasContext: CanvasRenderingContext2D
-) => {
-    canvasContext?.strokeRect(
-        boardObject.x,
-        boardObject.y,
-        boardObject.width,
-        boardObject.height
-    );
-    canvasContext?.strokeRect(
-        boardObject.x,
-        boardObject.y,
-        boardObject.width,
-        boardObject.height
-    );
-};
-
-const drawCircle = (
-    boardObject: CircleObject,
-    canvasContext: CanvasRenderingContext2D
-) => {
-    canvasContext?.arc(
-        boardObject.x,
-        boardObject.y,
-        boardObject.radius,
+export const clearCanvas = (canvasContext:CanvasRenderingContext2D | undefined | null,canvasRef:HTMLCanvasElement | null) => {
+    canvasContext?.clearRect(
         0,
-        2 * Math.PI
+        0,
+        canvasRef?.width as number,
+        canvasRef?.height as number
     );
-    canvasContext?.stroke();
 };
 
-const drawLine = (
-    boardObject: LineObject,
-    canvasContext: CanvasRenderingContext2D
-) => {
-    canvasContext.moveTo(boardObject.x, boardObject.y);
-    canvasContext.lineTo(boardObject.dx, boardObject.dy);
-    canvasContext?.stroke();
-};
 
-const drawScribble = (
-    boardObject: ScribbleObject,
-    canvasContext: CanvasRenderingContext2D
-) => {
-    canvasContext.moveTo(boardObject.x, boardObject.y);
-    boardObject.path.forEach((PlotPoint)=>{
-        canvasContext.lineTo(PlotPoint.x, PlotPoint.y);
-    });
-    canvasContext?.stroke();
-}
-
-export const getDistanceOfPoints = (point1: PlotPoint, point2: PlotPoint) => {
+export const getDistanceOfPoints = (point1: IPlotPoint, point2: IPlotPoint) => {
     return Math.sqrt(
         Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
     );
@@ -90,14 +50,14 @@ export const getDistanceOfPoints = (point1: PlotPoint, point2: PlotPoint) => {
 
 
 export const isBoardObjectSelected = (
-    boardObject: BoardObject,
+    boardObject: IBoardObject,
     clickX: number,
     clickY: number
 ) => {
     switch (boardObject.type) {
-        case BoardShapes.RECT: {
+        case IBoardShapes.RECT: {
             // eslint-disable-next-line no-case-declarations
-            const tempObject = boardObject as RectObject;
+            const tempObject = boardObject as IRectObject;
             return (
                 clickX > tempObject.x &&
                 clickX < tempObject.x + tempObject.width &&
@@ -105,9 +65,9 @@ export const isBoardObjectSelected = (
                 clickY < tempObject.y + tempObject.height
             );
         }
-        case BoardShapes.CIRCLE: {
+        case IBoardShapes.CIRCLE: {
             // eslint-disable-next-line no-case-declarations
-            const tempObject = boardObject as CircleObject;
+            const tempObject = boardObject as ICircleObject;
             return (
                 clickX > tempObject.x - tempObject.radius &&
                 clickX < tempObject.x + tempObject.radius &&
@@ -115,8 +75,8 @@ export const isBoardObjectSelected = (
                 clickY < tempObject.y + tempObject.radius
             );
         }
-        case BoardShapes.LINE: {
-            const tempObject = boardObject as LineObject;
+        case IBoardShapes.LINE: {
+            const tempObject = boardObject as ILineObject;
 
             return (
                 (clickX > tempObject.x - 10 &&
@@ -133,3 +93,6 @@ export const isBoardObjectSelected = (
             return false;
     }
 };
+
+
+

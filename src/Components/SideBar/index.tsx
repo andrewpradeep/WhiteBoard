@@ -6,7 +6,7 @@ import PenIcon from "../../assets/utility/pen.svg";
 import pointerIcon from "../../assets/utility/pointer.svg";
 
 import { useState } from "react";
-import { BoardMode, BoardShapes } from "../../Contracts/WhiteBoard";
+import { IBoardMode, IBoardShapes } from "../../Contracts/WhiteBoard";
 import {
     setBoardMode,
     setSelectedShapeAction,
@@ -18,20 +18,20 @@ const SideBar: React.FC = () => {
     const dispatch = useDispatch();
     const [isShapeListVisible, setShapeListVisible] = useState(false);
     const handlePointerClick = ()=>{
-        dispatch(setBoardMode(BoardMode.SELECTION));
+        dispatch(setBoardMode(IBoardMode.SELECTION));
     }
 
-    const handleShapeSelection = (shape: BoardShapes) => {
+    const handleShapeSelection = (shape: IBoardShapes) => {
         setShapeListVisible(false);
         dispatch(setSelectedShapeAction(shape));
     };
 
     const handleLineClick = () => {
-        dispatch(setBoardMode(BoardMode.ADD_LINE));
+        dispatch(setBoardMode(IBoardMode.ADD_LINE));
     };
 
     const handleScribbleClick = ()=>{
-        dispatch(setBoardMode(BoardMode.SCRIBBLE));
+        dispatch(setBoardMode(IBoardMode.SCRIBBLE));
     }
 
     return (

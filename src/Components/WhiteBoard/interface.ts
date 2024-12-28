@@ -1,13 +1,9 @@
-export interface WhiteBoardProps {
+export interface IWhiteBoardProps {
     className?: string;
     width: number;
     height: number;
 }
 
-export interface SelectedObjectDetail {
-    lastX: number;
-    lastY: number;
-    position: number;
-}
+
 
 
