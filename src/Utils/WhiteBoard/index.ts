@@ -5,7 +5,6 @@ import {
     ILineObject,
     IPlotPoint,
     IRectObject,
-    IScribbleObject,
 } from "../../Contracts/WhiteBoard";
 
 

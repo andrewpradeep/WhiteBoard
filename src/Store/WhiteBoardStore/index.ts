@@ -10,7 +10,7 @@ export interface ISelectedObjectDetail {
     lastX: number;
     lastY: number;
     position: number;
-    data: any
+    data: IBoardObject
 }
 
 export interface WhiteBoardState {
