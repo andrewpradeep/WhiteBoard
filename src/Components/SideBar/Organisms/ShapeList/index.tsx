@@ -4,10 +4,10 @@ import { IBoardShapes } from "../../../../Contracts/WhiteBoard";
 import Icon from "../../../Icon";
 import CircleLogo from "../../../../assets/utility/circle.svg";
 import SquareLogo from "../../../../assets/utility/shapes.svg";
-import { ShapeListProps } from "./interface";
+import { IShapeListProps } from "./interface";
 import useClickOutside from "../../../../Hooks/useClickOutside";
 
-const ShapeList: React.FC<ShapeListProps> = ({ clickOutside, onSelection }) => {
+const ShapeList: React.FC<IShapeListProps> = ({ clickOutside, onSelection }) => {
     const ref = useRef<HTMLDivElement>(null);
 
     useClickOutside(ref, clickOutside);
