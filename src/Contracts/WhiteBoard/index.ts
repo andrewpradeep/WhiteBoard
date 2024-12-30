@@ -21,11 +21,16 @@ export interface ICircleObject extends IBoardObjectDefaultprops {
     radius: number;
 }
 
+
+export enum ILineVectorPoints {
+    TERMINAL = "terminal",
+    INITIAL = "initial"
+
+}
 export interface ILineObject extends IBoardObjectDefaultprops {
     dx: number;
     dy: number;
-
-    draggingFromDestination?: boolean;
+    draggingFromDestination?: ILineVectorPoints;
 }
 
 export interface IScribbleObject extends IBoardObjectDefaultprops {

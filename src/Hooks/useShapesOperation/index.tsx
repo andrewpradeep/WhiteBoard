@@ -61,7 +61,7 @@ const drawLine = (
     boardObject: ILineObject,
 ) => {
     canvasContext?.moveTo(boardObject.x, boardObject.y);
-    canvasContext?.lineTo(boardObject.dx, boardObject.dy);
+    canvasContext?.lineTo(boardObject.x + boardObject.dx,boardObject.y + boardObject.dy);
     canvasContext?.stroke();
 };
 

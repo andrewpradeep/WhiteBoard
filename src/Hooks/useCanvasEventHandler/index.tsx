@@ -1,6 +1,6 @@
 import { MouseEventHandler, useState } from "react";
 import { useDispatch } from "react-redux";
-import { IBoardMode, IBoardObject, IBoardObjectDefaultprops, IBoardShapes, ILineObject, IScribbleObject } from "../../Contracts/WhiteBoard";
+import { IBoardMode, IBoardObject, IBoardObjectDefaultprops, IBoardShapes, ILineObject, ILineVectorPoints, IScribbleObject } from "../../Contracts/WhiteBoard";
 import { useSelector } from "react-redux";
 import { addWhiteBoardObjectAction, clearSelectedBoardObjectAction, resetSelectedShapeAction, setBoardMode, setSelectedBoardObjectAction, setWhiteBoardAction } from "../../Store/WhiteBoardStore";
 import { getDistanceOfPoints, isBoardObjectSelected } from "../../Utils/WhiteBoard";
@@ -61,8 +61,8 @@ const useCanvasEventHandler = ()=>{
             x: pageX,
             y: pageY,
             type: IBoardShapes.LINE,
-            dx: pageX,
-            dy: pageY,
+            dx: 0,
+            dy: 0,
         };
         dispatch(addWhiteBoardObjectAction(newObject));
     };
@@ -101,6 +101,7 @@ const useCanvasEventHandler = ()=>{
         else if(boardMode === IBoardMode.SCRIBBLE)
         {
             addScribbleToCanvas(pageX,pageY);
+            return;
         }
 
         const position = getSelectedObjectPosition(pageX, pageY);
@@ -115,7 +116,7 @@ const useCanvasEventHandler = ()=>{
             }));
 
             if (boardObject.type === IBoardShapes.LINE) {
-                const tempObject = boardObject as ILineObject;
+                const tempObject = {...boardObject} as ILineObject;
                 tempObject.draggingFromDestination =
                     getDistanceOfPoints(
                         { x: tempObject.x, y: tempObject.y },
@@ -123,14 +124,14 @@ const useCanvasEventHandler = ()=>{
                             x: pageX,
                             y: pageY,
                         }
-                    ) >
+                    ) < 20 ? ILineVectorPoints.INITIAL :   
                     getDistanceOfPoints(
-                        { x: tempObject.dx, y: tempObject.dy },
+                        { x: tempObject.x + tempObject.dx, y: tempObject.y + tempObject.dy },
                         {
                             x: pageX,
                             y: pageY,
                         }
-                    );
+                    ) < 20 ?  ILineVectorPoints.TERMINAL : undefined;
 
                 const boardList = [...boardObjectList];
                 boardList[position] = tempObject;
@@ -148,8 +149,8 @@ const useCanvasEventHandler = ()=>{
         const boardList = [...boardObjectList];
         if (boardMode === IBoardMode.ADD_LINE && isDraggingLine) {
             const lastObject = structuredClone(boardList.pop()) as ILineObject;
-            lastObject.dx = pageX;
-            lastObject.dy = pageY;
+            lastObject.dx =  pageX - lastObject.x ;
+            lastObject.dy =  pageY - lastObject.y;
             boardList.push(lastObject);
         }
         else if(boardMode=== IBoardMode.SCRIBBLE && isDraggingLine)
@@ -164,13 +165,22 @@ const useCanvasEventHandler = ()=>{
             );
 
             if (
-                boardObject.type === IBoardShapes.LINE &&
-                (boardObject as ILineObject).draggingFromDestination
+                boardObject.type === IBoardShapes.LINE  && !!(boardObject as ILineObject).draggingFromDestination
             ) {
                 const tempObject = boardObject as ILineObject;
 
-                tempObject.dx = pageX;
-                tempObject.dy = pageY;
+                if((boardObject as ILineObject).draggingFromDestination === ILineVectorPoints.TERMINAL)
+                {
+                    tempObject.dx = pageX - tempObject.x;
+                    tempObject.dy = pageY - tempObject.y;
+                }
+                else if((boardObject as ILineObject).draggingFromDestination === ILineVectorPoints.INITIAL)
+                {
+                    tempObject.dx = (tempObject.x - pageX) + tempObject.dx;
+                    tempObject.dy = (tempObject.y - pageY) + tempObject.dy;
+                    tempObject.x = pageX;
+                    tempObject.y = pageY;
+                }
 
                 boardList[selectedBoardObject.position] = tempObject;
             } else {

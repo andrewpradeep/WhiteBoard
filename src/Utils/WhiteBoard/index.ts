@@ -76,17 +76,12 @@ export const isBoardObjectSelected = (
         }
         case IBoardShapes.LINE: {
             const tempObject = boardObject as ILineObject;
+            const {x,y} = tempObject;
+            const dx = x + tempObject.dx;
+            const dy = y+tempObject.dy
 
-            return (
-                (clickX > tempObject.x - 10 &&
-                    clickX < tempObject.x + 10 &&
-                    clickY > tempObject.y - 10 &&
-                    clickY < tempObject.y + 10) ||
-                (clickX > tempObject.dx - 10 &&
-                    clickX < tempObject.dx + 10 &&
-                    clickY > tempObject.dy - 10 &&
-                    clickY < tempObject.dy + 10)
-            );
+
+            return Math.round((clickX - x)/(dx - x)) === Math.round((clickY - y)/(dy-y)); 
         }
         default:
             return false;
