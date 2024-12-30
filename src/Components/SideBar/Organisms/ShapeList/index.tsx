@@ -13,7 +13,7 @@ const ShapeList: React.FC<IShapeListProps> = ({ clickOutside, onSelection }) => 
     useClickOutside(ref, clickOutside);
 
     return (
-        <div className="shape-list" ref={ref}>
+        <div className="shape-list-container" ref={ref}>
             <span
                 className="icon-container"
                 onClick={() => {

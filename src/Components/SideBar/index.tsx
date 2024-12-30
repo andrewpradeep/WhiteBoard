@@ -3,7 +3,8 @@ import "./index.css";
 import SquareIcon from "../../assets/utility/shapes.svg";
 import LineIcon from "../../assets/utility/arrow.svg";
 import PenIcon from "../../assets/utility/pen.svg";
-import pointerIcon from "../../assets/utility/pointer.svg";
+// import pointerIcon from "../../assets/utility/pointer.svg";
+import cursorPointerIcon from "../../assets/utility/cursor-pointer.svg";
 
 import { useState } from "react";
 import { IBoardMode, IBoardShapes } from "../../Contracts/WhiteBoard";
@@ -13,10 +14,18 @@ import {
 } from "../../Store/WhiteBoardStore";
 import { useDispatch } from "react-redux";
 import ShapeList from "./Organisms/ShapeList";
+import { useSelector } from "react-redux";
+import { RootState } from "../../rootReducer";
 
 const SideBar: React.FC = () => {
     const dispatch = useDispatch();
     const [isShapeListVisible, setShapeListVisible] = useState(false);
+
+    const {boardMode} = useSelector((state:RootState)=>{
+        return {
+            boardMode: state.WhiteBoardStore.boardMode
+        }
+    })
     const handlePointerClick = ()=>{
         dispatch(setBoardMode(IBoardMode.SELECTION));
     }
@@ -37,28 +46,18 @@ const SideBar: React.FC = () => {
     return (
         <>
             <div className="side-bar">
-                <span className="icon-container" onClick={handlePointerClick}>
-                    <Icon srcUrl={pointerIcon} className="side-bar-icon" />
+                <span className={`icon-container ${boardMode === IBoardMode.SELECTION && "selected"}`} onClick={handlePointerClick}>
+                    <Icon srcUrl={cursorPointerIcon}  className="side-bar-icon" />
                 </span>
                 <span
-                    className="icon-container"
+                    className={`icon-container ${boardMode === IBoardMode.ADD_SHAPE && "selected"}`}
                     onClick={() => {
                         setShapeListVisible(!isShapeListVisible);
                     }}
                 >
                     <Icon srcUrl={SquareIcon} className="side-bar-icon" />
-                </span>
 
-                <span className="icon-container" onClick={handleLineClick}>
-                    <Icon srcUrl={LineIcon} className="side-bar-icon" />
-                </span>
-
-                <span className="icon-container" onClick={handleScribbleClick}>
-                    <Icon srcUrl={PenIcon} className="side-bar-icon" />
-                </span>
-            </div>
-
-            {isShapeListVisible && (
+                    {isShapeListVisible && (
                 <ShapeList
                     clickOutside={() => {
                         setShapeListVisible(false);
@@ -66,6 +65,18 @@ const SideBar: React.FC = () => {
                     onSelection={handleShapeSelection}
                 />
             )}
+                </span>
+
+                <span className={`icon-container ${boardMode === IBoardMode.ADD_LINE && "selected"}`}onClick={handleLineClick}>
+                    <Icon srcUrl={LineIcon} className="side-bar-icon" />
+                </span>
+
+                <span className={`icon-container ${boardMode === IBoardMode.SCRIBBLE && "selected"}`} onClick={handleScribbleClick}>
+                    <Icon srcUrl={PenIcon} className="side-bar-icon" />
+                </span>
+            </div>
+
+           
         </>
     );
 };
