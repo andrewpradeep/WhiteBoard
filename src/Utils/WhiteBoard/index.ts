@@ -92,9 +92,10 @@ export const isBoardObjectSelected = (
             const {x,y} = tempObject;
             const dx = x + tempObject.dx;
             const dy = y+tempObject.dy
+            const iswithXLimit = Math.min(x,dx) - 10 <= clickX && clickX <= Math.max(x,dx) +10;
+            const iswithYLimit = Math.min(y,dy) - 10 <= clickY && clickY <= Math.max(y,dy) +10;
 
-
-            return Math.round((clickX - x)/(dx - x)) === Math.round((clickY - y)/(dy-y)); 
+            return iswithXLimit && iswithYLimit && (Math.round((clickX - x)/(dx - x)) === Math.round((clickY - y)/(dy-y))); 
         }
         default:
             return false;
