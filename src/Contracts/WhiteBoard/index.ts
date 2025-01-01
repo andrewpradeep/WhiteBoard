@@ -3,7 +3,8 @@ export enum IBoardShapes {
     RECT = "rect",
     CIRCLE = "circle",
     LINE = "line",
-    SCRIBBLE = "scribble"
+    SCRIBBLE = "scribble",
+    TEXT_BOX= "text_box"
 }
 
 export interface IBoardObjectDefaultprops {
@@ -35,6 +36,10 @@ export interface ILineObject extends IBoardObjectDefaultprops {
 
 export interface IScribbleObject extends IBoardObjectDefaultprops {
     path:IPlotPoint[];
+}
+
+export interface ITEXTBoxObject extends IRectObject{
+    text: string;
 }
 
 export type IBoardObject = IRectObject | ICircleObject | ILineObject | IScribbleObject;

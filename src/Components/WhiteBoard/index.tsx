@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState } from "react";
-import {  IWhiteBoardProps } from "./interface";
+import React, { useEffect, useRef, useState } from "react";
+import { IWhiteBoardProps } from "./interface";
 import "./index.css";
 import {
     IBoardMode,
@@ -8,7 +8,7 @@ import {
 } from "../../Contracts/WhiteBoard";
 import { useSelector } from "react-redux";
 import { RootState } from "../../rootReducer";
-import { clearCanvas, drawBackGround } from "../../Utils/WhiteBoard";
+import { clearCanvas, downloadCanvasAsImage, drawBackGround } from "../../Utils/WhiteBoard";
 import useShapesOperation from "../../Hooks/useShapesOperation";
 import useCanvasEventHandler from "../../Hooks/useCanvasEventHandler";
 
@@ -17,7 +17,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
     height,
     className = "",
 }) => {
-    const { boardObjectList, boardMode,selectedBoardObject } = useSelector(
+    const { boardObjectList, boardMode, selectedBoardObject } = useSelector(
         (state: RootState) => {
             return {
                 boardMode: state.WhiteBoardStore.boardMode,
@@ -35,12 +35,17 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
 
-    const { drawShapes } = useShapesOperation({ canvasContext });
+    const { drawShapes, drawSelection } = useShapesOperation({ canvasContext });
     const { handleMouseDown, handleMouseMove, handleMouseUp } = useCanvasEventHandler()
 
     useEffect(() => {
         const context = canvasRef.current?.getContext("2d");
         setCanvasContext(context);
+        document.addEventListener("downloadCanvas",downloadCanvas)
+
+        return ()=>{
+            document.removeEventListener('downloadCanvas',downloadCanvas);
+        }
     }, []);
 
     useEffect(() => {
@@ -51,19 +56,33 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
 
 
     const drawObjects = () => {
-        clearCanvas(canvasContext, canvasRef.current);
-        drawBackGround(canvasContext, canvasRef.current);
+        if (canvasContext) {
 
-        if (boardObjectList.length && canvasContext) {
-            boardObjectList.forEach((boardObject: IBoardObject) => {
-                canvasContext?.beginPath();
-                canvasContext.strokeStyle = "#000";
-                drawShapes(boardObject);
-                canvasContext?.closePath();
-            });
+            clearCanvas(canvasContext, canvasRef.current);
+            drawBackGround(canvasContext as CanvasRenderingContext2D, canvasRef.current);
+
+            if (boardObjectList.length && canvasContext) {
+                boardObjectList.forEach((boardObject: IBoardObject) => {
+                    canvasContext?.beginPath();
+                    canvasContext.strokeStyle = "#000";
+                    canvasContext.lineWidth = 1.5;
+                    canvasContext.stroke
+                    drawShapes(boardObject);
+                    canvasContext?.closePath();
+                });
+            }
+
+            if (selectedBoardObject) {
+                drawSelection(selectedBoardObject);
+
+            }
+
         }
     };
 
+    const downloadCanvas = ()=>{
+        canvasRef.current &&  downloadCanvasAsImage(canvasRef.current as HTMLCanvasElement)
+    }
 
     return (
         <>
@@ -71,9 +90,10 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
                 width={width}
                 height={height}
                 className={`white-board-canvas ${boardMode !== IBoardMode.SELECTION
-                        ? "click-pointer touch-off"
-                        : ""
+                    ? "click-pointer touch-off"
+                    : ""
                     } ${className} ${selectedBoardObject ? "touch-off" : ""}`}
+                id={"white_board"}
                 ref={canvasRef}
                 onPointerDown={handleMouseDown}
                 onPointerMove={handleMouseMove}

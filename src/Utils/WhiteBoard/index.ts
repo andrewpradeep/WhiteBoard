@@ -11,7 +11,11 @@ import {
 
 
 
-export const drawBackGround = (canvasContext:CanvasRenderingContext2D | undefined | null,canvasRef:HTMLCanvasElement | null) => {
+export const drawBackGround = (canvasContext:CanvasRenderingContext2D,canvasRef:HTMLCanvasElement | null) => {
+    
+    canvasContext.fillStyle = 'white';
+    canvasContext.fillRect(0, 0, canvasRef?.width as number, canvasRef?.height as number);
+
     for (
         let i = 0;
         i <= (canvasRef?.width as number);
@@ -46,6 +50,15 @@ export const getDistanceOfPoints = (point1: IPlotPoint, point2: IPlotPoint) => {
         Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
     );
 };
+
+export const downloadCanvasAsImage = (canvasElement: HTMLCanvasElement)=>{
+    const dataURL = canvasElement.toDataURL("image/png");
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = "download";
+    link.click();
+
+}
 
 
 export const isBoardObjectSelected = (

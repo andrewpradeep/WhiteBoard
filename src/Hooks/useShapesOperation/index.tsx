@@ -1,4 +1,5 @@
 import { IBoardObject, IBoardShapes, ICircleObject, ILineObject, IRectObject, IScribbleObject } from "../../Contracts/WhiteBoard";
+import { ISelectedObjectDetail } from "../../Store/WhiteBoardStore";
 
 export interface IShapesOperationHookProps {
     canvasContext: CanvasRenderingContext2D | undefined | null
@@ -76,11 +77,18 @@ const drawScribble = (
 }
 
 
+const drawSelection = (selectionObject: ISelectedObjectDetail)=>{
+    // To be completed shortly
+    return selectionObject.data;
+}
+
+
 
 
 
 return {  
     drawShapes,
+    drawSelection
 }
     
 }

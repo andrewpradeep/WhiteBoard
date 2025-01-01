@@ -4,6 +4,7 @@ import SquareIcon from "../../assets/utility/shapes.svg";
 import LineIcon from "../../assets/utility/arrow.svg";
 import PenIcon from "../../assets/utility/pen.svg";
 // import pointerIcon from "../../assets/utility/pointer.svg";
+import downloadIcon from "../../assets/utility/download.svg";
 import cursorPointerIcon from "../../assets/utility/cursor-pointer.svg";
 
 import { useState } from "react";
@@ -43,6 +44,11 @@ const SideBar: React.FC = () => {
         dispatch(setBoardMode(IBoardMode.SCRIBBLE));
     }
 
+    const handleCanvasDownload = ()=>{
+        const event = new CustomEvent("downloadCanvas",{});
+        document.dispatchEvent(event);
+    }
+
     return (
         <>
             <div className="side-bar">
@@ -74,6 +80,12 @@ const SideBar: React.FC = () => {
                 <span className={`icon-container ${boardMode === IBoardMode.SCRIBBLE && "selected"}`} onClick={handleScribbleClick}>
                     <Icon srcUrl={PenIcon} className="side-bar-icon" />
                 </span>
+
+                <span className="icon-container" onClick={handleCanvasDownload}>
+                    <Icon srcUrl={downloadIcon} className="side-bar-icon" />
+                </span>
+
+
             </div>
 
            

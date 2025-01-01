@@ -124,14 +124,14 @@ const useCanvasEventHandler = ()=>{
                             x: pageX,
                             y: pageY,
                         }
-                    ) < 20 ? ILineVectorPoints.INITIAL :   
+                    ) < 10 ? ILineVectorPoints.INITIAL :   
                     getDistanceOfPoints(
                         { x: tempObject.x + tempObject.dx, y: tempObject.y + tempObject.dy },
                         {
                             x: pageX,
                             y: pageY,
                         }
-                    ) < 20 ?  ILineVectorPoints.TERMINAL : undefined;
+                    ) < 10 ?  ILineVectorPoints.TERMINAL : undefined;
 
                 const boardList = [...boardObjectList];
                 boardList[position] = tempObject;
