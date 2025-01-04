@@ -1,4 +1,4 @@
-import { IBoardObject, IBoardShapes, ICircleObject, ILineObject, IRectObject, IScribbleObject } from "../../Contracts/WhiteBoard";
+import { IBoardObject, IBoardShapes, ICircleObject, ILineObject, IRectObject, IScribbleObject, ITextBoxObject } from "../../Contracts/WhiteBoard";
 import { ISelectedObjectDetail } from "../../Store/WhiteBoardStore";
 
 export interface IShapesOperationHookProps {
@@ -23,6 +23,9 @@ const useShapesOperation = (props:IShapesOperationHookProps)=>{
             case IBoardShapes.SCRIBBLE:
                 drawScribble(boardObject as IScribbleObject);
                 break;
+            case IBoardShapes.TEXT_BOX:
+                drawTextBox(boardObject as ITextBoxObject);
+                break;
             default:
                 return;
         }
@@ -31,12 +34,6 @@ const useShapesOperation = (props:IShapesOperationHookProps)=>{
 const drawRect = (
     boardObject: IRectObject,
 ) => {
-    canvasContext?.strokeRect(
-        boardObject.x,
-        boardObject.y,
-        boardObject.width,
-        boardObject.height
-    );
     canvasContext?.strokeRect(
         boardObject.x,
         boardObject.y,
@@ -76,10 +73,38 @@ const drawScribble = (
     canvasContext?.stroke();
 }
 
+const drawTextBox = ( boardObject: ITextBoxObject)=>{
+    if(canvasContext)
+    {
+        canvasContext.fillStyle = "white";
+        canvasContext.fillRect(
+            boardObject.x,
+            boardObject.y,
+            boardObject.width,
+            boardObject.height
+        );
+        canvasContext.font = "13px Helvetica, Arial, sans-serif";
+        canvasContext.fillStyle = "#000";
+        boardObject.text.split(/\r?\n/).forEach((text, index) => {
+            canvasContext.fillText(text, boardObject.x + (12), boardObject.y + ((index + 1) * 13) + 15);
+
+        });
+        
+        canvasContext.strokeRect(
+            boardObject.x,
+            boardObject.y,
+            boardObject.width,
+            boardObject.height
+        );
+    }
+    
+    
+}
+
 
 const drawSelection = (selectionObject: ISelectedObjectDetail)=>{
     // To be completed shortly
-    return selectionObject.data;
+    return selectionObject;
 }
 
 
@@ -88,7 +113,7 @@ const drawSelection = (selectionObject: ISelectedObjectDetail)=>{
 
 return {  
     drawShapes,
-    drawSelection
+    drawSelection,
 }
     
 }

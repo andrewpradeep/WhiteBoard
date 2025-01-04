@@ -38,11 +38,13 @@ export interface IScribbleObject extends IBoardObjectDefaultprops {
     path:IPlotPoint[];
 }
 
-export interface ITEXTBoxObject extends IRectObject{
+export interface ITextBoxObject extends IRectObject{
     text: string;
+    html: string
 }
 
-export type IBoardObject = IRectObject | ICircleObject | ILineObject | IScribbleObject;
+
+export type IBoardObject = IRectObject | ICircleObject | ILineObject | IScribbleObject | ITextBoxObject;
 
 export interface IBoard {
     ObjectList: IBoardObject[];
@@ -52,7 +54,8 @@ export enum IBoardMode {
     SELECTION = "selection",
     ADD_SHAPE = "add_shape",
     ADD_LINE = "add_line",
-    SCRIBBLE = "scribble"
+    SCRIBBLE = "scribble",
+    ADD_TEXT_BOX = "add_text_box"
 }
 
 export interface IPlotPoint {

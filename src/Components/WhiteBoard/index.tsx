@@ -17,14 +17,15 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
     height,
     className = "",
 }) => {
-    const { boardObjectList, boardMode, selectedBoardObject } = useSelector(
+    const { boardObjectList, boardMode, selectedBoardObject,isDraggingInCanvas } = useSelector(
         (state: RootState) => {
             return {
                 boardMode: state.WhiteBoardStore.boardMode,
                 boardObjectList:
                     state.WhiteBoardStore.currentBoard?.ObjectList || [],
                 selectedShape: state.WhiteBoardStore.selectedShape,
-                selectedBoardObject: state.WhiteBoardStore.selectedBoardObject
+                selectedBoardObject: state.WhiteBoardStore.selectedBoardObject,
+                isDraggingInCanvas : state.WhiteBoardStore.isDraggingInCanvas
             };
         }
     );
@@ -52,7 +53,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
         if (canvasContext) {
             window.requestAnimationFrame(drawObjects);
         }
-    }, [canvasContext, boardObjectList]);
+    }, [canvasContext, boardObjectList,selectedBoardObject,isDraggingInCanvas]);
 
 
     const drawObjects = () => {

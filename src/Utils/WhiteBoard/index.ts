@@ -67,7 +67,8 @@ export const isBoardObjectSelected = (
     clickY: number
 ) => {
     switch (boardObject.type) {
-        case IBoardShapes.RECT: {
+        case IBoardShapes.RECT: 
+        {
             // eslint-disable-next-line no-case-declarations
             const tempObject = boardObject as IRectObject;
             return (
@@ -75,6 +76,17 @@ export const isBoardObjectSelected = (
                 clickX < tempObject.x + tempObject.width &&
                 clickY > tempObject.y &&
                 clickY < tempObject.y + tempObject.height
+            );
+        }
+        case IBoardShapes.TEXT_BOX:
+        {
+            // eslint-disable-next-line no-case-declarations
+            const tempObject = boardObject as IRectObject;
+            return (
+                clickX > tempObject.x -15&&
+                clickX < tempObject.x + tempObject.width +15 &&
+                clickY > tempObject.y -15 &&
+                clickY < tempObject.y + tempObject.height+15
             );
         }
         case IBoardShapes.CIRCLE: {

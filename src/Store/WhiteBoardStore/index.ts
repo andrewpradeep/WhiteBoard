@@ -10,7 +10,6 @@ export interface ISelectedObjectDetail {
     lastX: number;
     lastY: number;
     position: number;
-    data: IBoardObject
 }
 
 export interface WhiteBoardState {
@@ -18,7 +17,8 @@ export interface WhiteBoardState {
     currentBoard: IBoard;
     selectedShape: IBoardShapes | null;
     boardMode: IBoardMode;
-    selectedBoardObject: ISelectedObjectDetail | null
+    selectedBoardObject: ISelectedObjectDetail | null;
+    isDraggingInCanvas: boolean;
 }
 
 
@@ -28,7 +28,8 @@ const initialState: WhiteBoardState = {
     currentBoard: { ObjectList: [] },
     selectedShape: null,
     boardMode: IBoardMode.SELECTION,
-    selectedBoardObject: null
+    selectedBoardObject: null,
+    isDraggingInCanvas: true
 };
 
 const WhiteBoardSlice = createSlice({
@@ -74,6 +75,12 @@ const WhiteBoardSlice = createSlice({
                 boardMode: action.payload,
             };
         },
+        resetBoardMode(state) {
+            return {
+                ...state,
+                boardMode: IBoardMode.SELECTION,
+            };
+        },
         setSelectedBoardObjectAction(state,action:PayloadAction<ISelectedObjectDetail>){
             return {
                 ...state,
@@ -85,6 +92,12 @@ const WhiteBoardSlice = createSlice({
                 ...state,
                 selectedBoardObject: null
             }
+        },
+        setIsDraggingInCanvas(state,action:PayloadAction<boolean>){
+            return {
+                ...state,
+                isDraggingInCanvas: action.payload
+            }
         }
     },
 });
@@ -95,8 +108,10 @@ export const {
     resetSelectedShapeAction,
     setWhiteBoardAction,
     setBoardMode,
+    setIsDraggingInCanvas,
     setSelectedBoardObjectAction,
-    clearSelectedBoardObjectAction
+    clearSelectedBoardObjectAction,
+    resetBoardMode
     
 } = WhiteBoardSlice.actions;
 
