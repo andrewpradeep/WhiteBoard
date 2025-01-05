@@ -91,10 +91,10 @@ const drawTextBox = ( boardObject: ITextBoxObject)=>{
         });
         
         canvasContext.strokeRect(
-            boardObject.x,
-            boardObject.y,
-            boardObject.width,
-            boardObject.height
+            boardObject.x+2,
+            boardObject.y+2,
+            boardObject.width-4,
+            boardObject.height-4
         );
     }
     
