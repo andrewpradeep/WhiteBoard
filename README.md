@@ -14,11 +14,14 @@ check this out in https://creamboard.netlify.app/
 
 RoadMap
 
+Completed
 1. Arrows
-2. ReSize
-3. Delete
-4. Add Text
-5. draw
+2. Add Text
+3. draw
+
+Pending
+1. Resize
+2. Delete
 
 
 Update: 
