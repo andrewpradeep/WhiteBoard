@@ -1,7 +1,8 @@
 import Icon from "../Icon";
 import "./index.css";
 import SquareIcon from "../../assets/utility/shapes.svg";
-import LineIcon from "../../assets/utility/arrow.svg";
+import LineIcon from "../../assets/utility/line.svg";
+import ArrowIcon from "../../assets/utility/arrow.svg";
 import PenIcon from "../../assets/utility/pen.svg";
 // import pointerIcon from "../../assets/utility/pointer.svg";
 import downloadIcon from "../../assets/utility/download.svg";
@@ -88,7 +89,7 @@ const SideBar: React.FC = () => {
             label: "Arrow",
             mode: IBoardMode.ADD_LINE,
             shape: IBoardShapes.ARROW,
-            icon: LineIcon,
+            icon: ArrowIcon,
             onClick: handleArrowClick,
         },
         {
