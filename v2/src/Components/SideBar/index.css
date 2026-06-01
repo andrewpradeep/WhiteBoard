@@ -1,0 +1,185 @@
+.side-bar {
+    position: absolute;
+    width: 4rem;
+    left: 2rem;
+    top: 4.6rem;
+    z-index: 60;
+    padding: 0.75rem 0.45rem;
+    background: rgba(15, 23, 42, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    box-shadow: 0 22px 50px rgba(15, 23, 42, 0.28);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    backdrop-filter: blur(18px);
+
+    .icon-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        width: 3rem;
+        min-height: 3.35rem;
+        padding: 0.35rem;
+        color: #cbd5e1;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 140ms ease;
+
+        &:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+    }
+
+    .icon-container.selected {
+        color: #ffffff;
+        background: rgba(37, 99, 235, 0.95);
+        border-color: rgba(147, 197, 253, 0.45);
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.32);
+    }
+
+    .icon-container span {
+        font-size: 0.58rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1;
+    }
+
+    .side-bar-icon {
+        width: 1.45rem;
+        height: 1.45rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 2rem;
+        filter: brightness(0) invert(1);
+        opacity: 0.88;
+
+        img {
+            width: 82%;
+            height: 82%;
+            object-fit: contain;
+        }
+    }
+}
+
+.eraser-tool-icon {
+    display: grid;
+    place-items: center;
+    width: 1.45rem;
+    height: 1.45rem;
+    color: #ffffff;
+    font-size: 1.25rem !important;
+    line-height: 1;
+}
+
+.side-bar-label {
+    margin-bottom: 0.25rem;
+    color: #94a3b8;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.export-button {
+    margin-top: 0.35rem;
+    background: rgba(16, 185, 129, 0.9) !important;
+}
+
+.export-menu-container {
+    position: absolute;
+    left: 4rem;
+    bottom: 0;
+    display: grid;
+    gap: 0.35rem;
+    min-width: 9rem;
+    padding: 0.45rem;
+    background: white;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.16);
+}
+
+.export-menu-container button {
+    width: 100%;
+    min-height: 2rem;
+    padding: 0.4rem 0.55rem;
+    color: #334155;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-align: left;
+}
+
+.export-menu-container button:hover {
+    color: #1d4ed8;
+    background: #eff6ff;
+}
+
+.shape-list-container {
+    position: absolute;
+    height: auto;
+    left: 4rem;
+    top: 0;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.16);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+
+    .icon-container {
+        display: inline-flex;
+        color: #334155;
+        background: #f8fafc;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+
+        &:hover {
+            color: #1d4ed8;
+            background-color: #eff6ff;
+        }
+
+        .side-bar-icon {
+            width: 2rem;
+            height: 2rem;
+            margin: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: none;
+        }
+    }
+}
+
+.shape-symbol-button {
+    width: 2.5rem !important;
+    min-height: 2.5rem !important;
+    color: #334155 !important;
+    background: #f8fafc !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    font-size: 1.5rem !important;
+    line-height: 1;
+}
+
+@media (max-width: 900px) {
+    .side-bar {
+        position: static;
+        flex-direction: row;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}

@@ -1,0 +1,7 @@
+.wb-logo-container {
+    object-fit: contain;
+}
+
+.wb-logo-container img {
+    display: block;
+}

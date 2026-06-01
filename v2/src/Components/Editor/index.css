@@ -1,0 +1,33 @@
+.text-editor-shell {
+    position: absolute;
+    z-index: 100;
+    min-width: 150px;
+}
+
+.text-selection-handle {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.35rem);
+    padding: 0.25rem 0.5rem;
+    color: #1d4ed8;
+    background: #eff6ff;
+    border: 1px solid rgba(37, 99, 235, 0.22);
+    border-radius: 999px;
+    cursor: default;
+    font-size: 0.72rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+#quill-editor {
+    background: white;
+    border: 1px solid rgba(37, 99, 235, 0.24);
+    border-radius: 12px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+    overflow: hidden;
+}
+
+#quill-editor .ql-container {
+    border: 0;
+    font-family: Inter, system-ui, sans-serif;
+}

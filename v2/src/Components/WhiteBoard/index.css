@@ -1,0 +1,14 @@
+
+.white-board-canvas {
+    touch-action: pinch-zoom;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+.click-pointer {
+    cursor: crosshair;
+}
+
+.touch-off {
+    touch-action: none;
+}
