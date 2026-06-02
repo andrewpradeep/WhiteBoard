@@ -1,5 +1,7 @@
 # WhiteBoard
 
+Live app: [CreamBoard](https://creamboard.netlify.app/)
+
 This repository is split into versioned app folders:
 
 - `v1`: deprecated snapshot of the original whiteboard.
