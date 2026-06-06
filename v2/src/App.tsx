@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { UIEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import BoardSwitcher from "./Components/BoardSwitcher";
@@ -20,10 +20,20 @@ import {
     saveWhiteBoardState,
 } from "./Utils/WhiteBoardPersistence";
 
+const INITIAL_BOARD_WIDTH = 2400;
+const INITIAL_BOARD_HEIGHT = 4800;
+const BOARD_EXPAND_THRESHOLD = 180;
+const BOARD_EXPAND_STEP = 1000;
+const MAX_BOARD_SIZE = 12000;
+
 function App() {
     const dispatch = useDispatch();
     const [hasLoadedPersistedState, setHasLoadedPersistedState] = useState(false);
     const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+    const [boardSize, setBoardSize] = useState({
+        width: INITIAL_BOARD_WIDTH,
+        height: INITIAL_BOARD_HEIGHT,
+    });
     const hasHydratedFromStorage = useRef(false);
     const whiteBoardState = useSelector((state: RootState) => state.WhiteBoardStore);
     const durableState = useMemo(() => {
@@ -105,6 +115,35 @@ function App() {
         setIsWorkspaceOpen(true);
     };
 
+    const handleCanvasFrameScroll = (event: UIEvent<HTMLDivElement>) => {
+        const frame = event.currentTarget;
+        const isNearRightEdge =
+            frame.scrollLeft + frame.clientWidth >= frame.scrollWidth - BOARD_EXPAND_THRESHOLD;
+        const isNearBottomEdge =
+            frame.scrollTop + frame.clientHeight >= frame.scrollHeight - BOARD_EXPAND_THRESHOLD;
+
+        if (!isNearRightEdge && !isNearBottomEdge) {
+            return;
+        }
+
+        setBoardSize((currentSize) => {
+            const nextSize = {
+                width:
+                    isNearRightEdge && currentSize.width < MAX_BOARD_SIZE
+                        ? Math.min(currentSize.width + BOARD_EXPAND_STEP, MAX_BOARD_SIZE)
+                        : currentSize.width,
+                height:
+                    isNearBottomEdge && currentSize.height < MAX_BOARD_SIZE
+                        ? Math.min(currentSize.height + BOARD_EXPAND_STEP, MAX_BOARD_SIZE)
+                        : currentSize.height,
+            };
+
+            return nextSize.width === currentSize.width && nextSize.height === currentSize.height
+                ? currentSize
+                : nextSize;
+        });
+    };
+
     if (!hasLoadedPersistedState) {
         return <main className="app-shell" />;
     }
@@ -128,8 +167,12 @@ function App() {
             <section className="workspace">
                 <BoardSwitcher onBackToWorkspaces={() => setIsWorkspaceOpen(false)} />
                 <SideBar />
-                <div className="canvas-frame">
-                    <WhiteBoard width={2000} height={2000} className="white-board" />
+                <div className="canvas-frame" onScroll={handleCanvasFrameScroll}>
+                    <WhiteBoard
+                        width={boardSize.width}
+                        height={boardSize.height}
+                        className="white-board"
+                    />
                 </div>
                 <Editor />
             </section>

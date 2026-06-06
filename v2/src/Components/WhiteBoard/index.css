@@ -1,6 +1,6 @@
 
 .white-board-canvas {
-    touch-action: none;
+    touch-action: pan-x pan-y;
     min-width: 100%;
     min-height: 100%;
     user-select: none;

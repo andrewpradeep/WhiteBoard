@@ -1,5 +1,5 @@
 .text-editor-shell {
-    position: absolute;
+    position: fixed;
     z-index: 100;
     min-width: 150px;
 }

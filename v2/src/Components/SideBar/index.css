@@ -177,10 +177,14 @@
 
 @media (max-width: 900px) {
     .side-bar {
-        position: sticky;
-        top: 0.65rem;
+        position: fixed;
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: calc(0.75rem + env(safe-area-inset-bottom));
+        top: auto;
         flex-direction: row;
-        width: 100%;
+        width: auto;
+        z-index: 110;
         overflow: visible;
         overscroll-behavior-inline: contain;
         padding: 0.5rem;
@@ -207,8 +211,8 @@
     .export-menu-container {
         position: absolute;
         left: 0.5rem;
-        top: calc(100% + 0.5rem);
-        bottom: auto;
+        top: auto;
+        bottom: calc(100% + 0.5rem);
     }
 
     .shape-list-container {
@@ -218,10 +222,18 @@
         max-width: calc(100vw - 1rem);
         z-index: 120;
     }
+
+    .export-menu-container {
+        left: auto;
+        right: 0.5rem;
+    }
 }
 
 @media (max-width: 520px) {
     .side-bar {
+        left: 0.5rem;
+        right: 0.5rem;
+        bottom: calc(0.5rem + env(safe-area-inset-bottom));
         gap: 0.25rem;
         justify-content: space-between;
     }

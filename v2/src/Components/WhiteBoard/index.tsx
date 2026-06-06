@@ -61,13 +61,13 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
                 selectedObject: selectedBoardObject,
             });
         }
-    }, [boardObjectList, canvasContext, selectedBoardObject]);
+    }, [boardObjectList, canvasContext, height, selectedBoardObject, width]);
 
     useEffect(() => {
         if (canvasContext) {
             window.requestAnimationFrame(drawObjects);
         }
-    }, [canvasContext, drawObjects,isDraggingInCanvas]);
+    }, [canvasContext, drawObjects, height, isDraggingInCanvas, width]);
 
     useEffect(() => {
         if (exportRequest.id > 0 && activeBoard) {
@@ -122,6 +122,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
                     } ${className} ${selectedBoardObject ? "touch-off" : ""}`}
                 id={"white_board"}
                 ref={canvasRef}
+                style={{ width, height }}
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerCancel={handlePointerUp}

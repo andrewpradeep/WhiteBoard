@@ -1,11 +1,19 @@
 import { PointerEventHandler, SyntheticEvent } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { IBoardMode } from "../../Contracts/WhiteBoard";
+import { RootState } from "../../rootReducer";
 import { pointerDown, pointerMoved, pointerUp } from "../../Store/WhiteBoardStore";
 
 
 const useCanvasEventHandler = ()=>{
 
     const dispatch = useDispatch();
+    const { boardMode, selectedBoardObject } = useSelector((state: RootState) => ({
+        boardMode: state.WhiteBoardStore.boardMode,
+        selectedBoardObject: state.WhiteBoardStore.selectedBoardObject,
+    }));
+    const shouldCapturePointer =
+        boardMode !== IBoardMode.SELECTION || selectedBoardObject !== null;
 
     const getCanvasPoint = (
         event: SyntheticEvent<HTMLCanvasElement, MouseEvent | PointerEvent>
@@ -21,13 +29,17 @@ const useCanvasEventHandler = ()=>{
     };
 
     const handlePointerDown: PointerEventHandler<HTMLCanvasElement> = (event) => {
-        event.preventDefault();
-        event.currentTarget.setPointerCapture(event.pointerId);
+        if (shouldCapturePointer) {
+            event.preventDefault();
+            event.currentTarget.setPointerCapture(event.pointerId);
+        }
         dispatch(pointerDown(getCanvasPoint(event)));
     };
 
     const handlePointerMove: PointerEventHandler<HTMLCanvasElement> = (event) => {
-        event.preventDefault();
+        if (shouldCapturePointer) {
+            event.preventDefault();
+        }
         dispatch(pointerMoved(getCanvasPoint(event)));
     };
 

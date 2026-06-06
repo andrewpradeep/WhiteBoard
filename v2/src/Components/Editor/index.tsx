@@ -1,7 +1,7 @@
 import QuillEditor from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./index.css"
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../rootReducer";
 import { IBoardShapes, ITextBoxObject } from "../../Contracts/WhiteBoard";
@@ -14,7 +14,7 @@ import { getActiveBoard, objectTextUpdated } from "../../Store/WhiteBoardStore";
 const Editor = ()=>{
 
     const [value, setValue] = useState("");
-    const [position,setPosition] = useState({left:0,top:0});
+    const [position,setPosition] = useState({left:0,top:0,width:150});
     const dispatch = useDispatch();
 
     const  { selectedBoardObject,boardObjectList,isDragging} = useSelector((state:RootState)=>{
@@ -34,18 +34,51 @@ const Editor = ()=>{
     const editorRef = useRef<ReactQuill>(null);
     const getEditor = () => editorRef.current?.getEditor();
 
+    const updateEditorPosition = useCallback(() => {
+        if (!isTextObjectSelected) {
+            return;
+        }
+
+        const data = selectedBoardObjectDetail as ITextBoxObject;
+        const canvas = document.getElementById("white_board") as HTMLCanvasElement | null;
+        const canvasBounds = canvas?.getBoundingClientRect();
+
+        if (!canvas || !canvasBounds) {
+            return;
+        }
+
+        const scaleX = canvasBounds.width / canvas.width;
+        const scaleY = canvasBounds.height / canvas.height;
+
+        setPosition({
+            top: canvasBounds.top + data.y * scaleY,
+            left: canvasBounds.left + data.x * scaleX,
+            width: Math.max(150, data.width * scaleX),
+        });
+    }, [isTextObjectSelected, selectedBoardObjectDetail]);
+
     useEffect(()=>{
         if(isTextObjectSelected)
         {
             const data = selectedBoardObjectDetail as ITextBoxObject;
-            const canvasBounds = document.getElementById("white_board")?.getBoundingClientRect();
-            setPosition({
-                top: data.y + (canvasBounds?.top ?? 0),
-                left: data.x + (canvasBounds?.left ?? 0),
-            });
             setValue(data.html);
+            updateEditorPosition();
         }
-    },[isTextObjectSelected, selectedBoardObject,selectedBoardObjectDetail]);
+    },[isTextObjectSelected, selectedBoardObject,selectedBoardObjectDetail, updateEditorPosition]);
+
+    useEffect(() => {
+        if (!isTextObjectSelected) {
+            return;
+        }
+
+        window.addEventListener("scroll", updateEditorPosition, { capture: true, passive: true });
+        window.addEventListener("resize", updateEditorPosition);
+
+        return () => {
+            window.removeEventListener("scroll", updateEditorPosition, { capture: true });
+            window.removeEventListener("resize", updateEditorPosition);
+        };
+    }, [isTextObjectSelected, updateEditorPosition]);
 
     const isEditorDisabled = (!isTextObjectSelected || isDragging);
 
@@ -92,7 +125,7 @@ const Editor = ()=>{
     return (
         <div
             className="text-editor-shell"
-            style={{top: position.top, left: position.left,minWidth:"150px", ...(isEditorDisabled ? {visibility:"hidden",zIndex:-1}:{})}}
+            style={{top: position.top, left: position.left, width: position.width, minWidth:"150px", ...(isEditorDisabled ? {visibility:"hidden",zIndex:-1}:{})}}
         >
             <button
                 className="text-selection-handle"
