@@ -46,8 +46,17 @@ function App() {
                     return;
                 }
 
-                if (savedState) {
+                if (savedState?.workspaces.length) {
                     dispatch(hydrateWhiteBoardState(savedState));
+                    setIsWorkspaceOpen(true);
+                } else {
+                    dispatch(
+                        createWorkspaceAction({
+                            name: "Default",
+                            description: "Default workspace",
+                        })
+                    );
+                    setIsWorkspaceOpen(true);
                 }
             })
             .finally(() => {
@@ -95,6 +104,10 @@ function App() {
         dispatch(switchWorkspaceAction(workspaceId));
         setIsWorkspaceOpen(true);
     };
+
+    if (!hasLoadedPersistedState) {
+        return <main className="app-shell" />;
+    }
 
     if (!isWorkspaceOpen || !whiteBoardState.workspaces.length) {
         return (
