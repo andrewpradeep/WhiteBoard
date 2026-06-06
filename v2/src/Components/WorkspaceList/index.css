@@ -328,13 +328,47 @@
         padding: 1rem;
     }
 
+    .empty-workspace-card {
+        padding: 2rem 1.25rem;
+        border-radius: 22px;
+    }
+
+    .empty-workspace-card h1,
+    .workspace-list-header h1 {
+        font-size: 1.55rem;
+        line-height: 1.1;
+    }
+
     .workspace-list-header,
     .workspace-pagination {
         align-items: flex-start;
         flex-direction: column;
     }
 
+    .workspace-list-header button,
+    .empty-workspace-card button {
+        width: 100%;
+        min-height: 2.75rem;
+    }
+
     .workspace-table-card {
         overflow-x: auto;
+        border-radius: 18px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .workspace-table-card table {
+        min-width: 42rem;
+    }
+
+    .workspace-delete-actions,
+    .workspace-pagination div {
+        width: 100%;
+    }
+
+    .workspace-delete-actions button,
+    .workspace-pagination button {
+        flex: 1;
+        min-height: 2.75rem;
     }
 }

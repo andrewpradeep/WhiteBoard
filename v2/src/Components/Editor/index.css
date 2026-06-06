@@ -31,3 +31,19 @@
     border: 0;
     font-family: Inter, system-ui, sans-serif;
 }
+
+@media (max-width: 520px) {
+    .text-editor-shell {
+        max-width: calc(100vw - 1rem);
+    }
+
+    .text-selection-handle {
+        min-height: 2rem;
+        padding: 0.35rem 0.65rem;
+        font-size: 0.78rem;
+    }
+
+    #quill-editor {
+        max-width: calc(100vw - 1rem);
+    }
+}

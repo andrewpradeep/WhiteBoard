@@ -45,7 +45,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
 
-    const { handleMouseDown, handleMouseMove, handleMouseUp } = useCanvasEventHandler()
+    const { handlePointerDown, handlePointerMove, handlePointerUp } = useCanvasEventHandler()
 
     useEffect(() => {
         const context = canvasRef.current?.getContext("2d");
@@ -122,10 +122,10 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
                     } ${className} ${selectedBoardObject ? "touch-off" : ""}`}
                 id={"white_board"}
                 ref={canvasRef}
-                onPointerDown={handleMouseDown}
-                onPointerMove={handleMouseMove}
-                onPointerCancel={handleMouseUp}
-                onPointerUp={handleMouseUp}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerCancel={handlePointerUp}
+                onPointerUp={handlePointerUp}
             ></canvas>
         </>
     );

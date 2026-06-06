@@ -1,4 +1,4 @@
-import { MouseEventHandler, SyntheticEvent } from "react";
+import { PointerEventHandler, SyntheticEvent } from "react";
 import { useDispatch } from "react-redux";
 import { pointerDown, pointerMoved, pointerUp } from "../../Store/WhiteBoardStore";
 
@@ -20,24 +20,28 @@ const useCanvasEventHandler = ()=>{
         };
     };
 
-    const handleMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
+    const handlePointerDown: PointerEventHandler<HTMLCanvasElement> = (event) => {
         event.preventDefault();
+        event.currentTarget.setPointerCapture(event.pointerId);
         dispatch(pointerDown(getCanvasPoint(event)));
     };
 
-    const handleMouseMove: MouseEventHandler<HTMLCanvasElement> = (event) => {
+    const handlePointerMove: PointerEventHandler<HTMLCanvasElement> = (event) => {
         event.preventDefault();
         dispatch(pointerMoved(getCanvasPoint(event)));
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp: PointerEventHandler<HTMLCanvasElement> = (event) => {
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+        }
         dispatch(pointerUp());
     };
 
     return {
-        handleMouseDown,
-        handleMouseMove,
-        handleMouseUp,
+        handlePointerDown,
+        handlePointerMove,
+        handlePointerUp,
     }
     
 }

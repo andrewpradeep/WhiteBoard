@@ -7,7 +7,7 @@ import { RootState } from "../../rootReducer";
 import { IBoardShapes, ITextBoxObject } from "../../Contracts/WhiteBoard";
 import ReactQuill from "react-quill";
 import { useDispatch } from "react-redux";
-import { ISelectedObjectDetail, getActiveBoard, objectTextUpdated } from "../../Store/WhiteBoardStore";
+import { getActiveBoard, objectTextUpdated } from "../../Store/WhiteBoardStore";
 
 
 
@@ -15,7 +15,6 @@ const Editor = ()=>{
 
     const [value, setValue] = useState("");
     const [position,setPosition] = useState({left:0,top:0});
-    const [localSelectedBoardObject,setLocalSelectedBoardObject] = useState<ISelectedObjectDetail | null>(null);
     const dispatch = useDispatch();
 
     const  { selectedBoardObject,boardObjectList,isDragging} = useSelector((state:RootState)=>{
@@ -39,7 +38,6 @@ const Editor = ()=>{
         if(isTextObjectSelected)
         {
             const data = selectedBoardObjectDetail as ITextBoxObject;
-            setLocalSelectedBoardObject(selectedBoardObject);
             const canvasBounds = document.getElementById("white_board")?.getBoundingClientRect();
             setPosition({
                 top: data.y + (canvasBounds?.top ?? 0),
@@ -51,17 +49,21 @@ const Editor = ()=>{
 
     const isEditorDisabled = (!isTextObjectSelected || isDragging);
 
-    const handleValueChange = (value:string)=>{
-        setValue(value);
+    const handleValueChange = (nextValue: string, _delta: unknown, source: string)=>{
+        setValue(nextValue);
+        if (source !== "user" || !selectedBoardObject) {
+            return;
+        }
+
         // Keep canvas text current even before the editor loses focus.
         const tempEditor = getEditor();
-        if(tempEditor?.root && localSelectedBoardObject)
+        if(tempEditor?.root)
         {
             const {width,height} = tempEditor.root.getBoundingClientRect();
             dispatch(objectTextUpdated({
-                id: localSelectedBoardObject.id,
+                id: selectedBoardObject.id,
                 text: tempEditor.getText(),
-                html: value,
+                html: nextValue,
                 width,
                 height,
             }));
@@ -71,11 +73,11 @@ const Editor = ()=>{
     const handleBlur = ()=>{
         const tempEditor = getEditor();
 
-        if(tempEditor?.root && localSelectedBoardObject)
+        if(tempEditor?.root && selectedBoardObject)
         {
             const {width,height} = tempEditor.root.getBoundingClientRect();
             dispatch(objectTextUpdated({
-                id: localSelectedBoardObject.id,
+                id: selectedBoardObject.id,
                 text: tempEditor.getText(),
                 html: value,
                 width,

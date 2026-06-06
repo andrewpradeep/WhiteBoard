@@ -1,8 +1,11 @@
 
 .white-board-canvas {
-    touch-action: pinch-zoom;
+    touch-action: none;
     min-width: 100%;
     min-height: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .click-pointer {

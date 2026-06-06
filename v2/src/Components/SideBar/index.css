@@ -177,9 +177,67 @@
 
 @media (max-width: 900px) {
     .side-bar {
-        position: static;
+        position: sticky;
+        top: 0.65rem;
         flex-direction: row;
         width: 100%;
-        margin-bottom: 1rem;
+        overflow: visible;
+        overscroll-behavior-inline: contain;
+        padding: 0.5rem;
+        border-radius: 18px;
+        scrollbar-width: none;
+    }
+
+    .side-bar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .side-bar .icon-container {
+        flex: 0 0 auto;
+        position: static;
+        width: 3.25rem;
+        min-height: 3.35rem;
+    }
+
+    .side-bar-label {
+        display: none;
+    }
+
+    .shape-list-container,
+    .export-menu-container {
+        position: absolute;
+        left: 0.5rem;
+        top: calc(100% + 0.5rem);
+        bottom: auto;
+    }
+
+    .shape-list-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(2.75rem, 1fr));
+        width: calc(100% - 1rem);
+        max-width: calc(100vw - 1rem);
+        z-index: 120;
+    }
+}
+
+@media (max-width: 520px) {
+    .side-bar {
+        gap: 0.25rem;
+        justify-content: space-between;
+    }
+
+    .side-bar .icon-container {
+        width: 2.35rem;
+        min-height: 3.1rem;
+        padding: 0.25rem;
+    }
+
+    .side-bar .icon-container span {
+        font-size: 0.5rem;
+    }
+
+    .shape-list-container {
+        width: calc(100% - 1rem);
+        padding: 0.6rem;
     }
 }

@@ -19,6 +19,8 @@
 .canvas-frame {
   overflow: auto;
   height: calc(100vh - 5.1rem);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   background: rgba(255, 255, 255, 0.76);
   border: 1px solid rgba(15, 23, 42, 0.07);
   border-radius: 20px;
@@ -32,6 +34,28 @@
 
 @media (max-width: 900px) {
   .workspace {
-    padding: 4.1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-height: 100dvh;
+    padding: 0.75rem;
+  }
+
+  .canvas-frame {
+    flex: 1;
+    height: auto;
+    min-height: 55dvh;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .workspace {
+    padding: 0.5rem;
+  }
+
+  .canvas-frame {
+    min-height: 58dvh;
+    border-radius: 14px;
   }
 }
