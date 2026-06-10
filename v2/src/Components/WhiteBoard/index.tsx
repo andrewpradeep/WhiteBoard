@@ -61,7 +61,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = ({
                 selectedObject: selectedBoardObject,
             });
         }
-    }, [boardObjectList, canvasContext, height, selectedBoardObject, width]);
+    }, [boardObjectList, canvasContext, selectedBoardObject]);
 
     useEffect(() => {
         if (canvasContext) {

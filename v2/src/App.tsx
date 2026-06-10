@@ -2,6 +2,7 @@ import { UIEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./App.css";
 import BoardSwitcher from "./Components/BoardSwitcher";
+import ChatPanel from "./Components/ChatPanel";
 import Editor from "./Components/Editor";
 import SideBar from "./Components/SideBar";
 import WorkspaceList from "./Components/WorkspaceList";
@@ -175,6 +176,7 @@ function App() {
                     />
                 </div>
                 <Editor />
+                <ChatPanel />
             </section>
         </main>
     );

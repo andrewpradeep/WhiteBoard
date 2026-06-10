@@ -679,6 +679,24 @@ const WhiteBoardSlice = createSlice({
                 textObject.height = action.payload.height;
             }
         },
+        applyGeneratedShapes(state, action: PayloadAction<IBoardObject[]>) {
+            const board = getActiveBoard(state);
+            if (!board || !action.payload.length) {
+                return;
+            }
+
+            const remainingCapacity = MAX_ELEMENTS_PER_BOARD - board.ObjectList.length;
+            if (remainingCapacity <= 0) {
+                return;
+            }
+
+            board.ObjectList.push(...action.payload.slice(0, remainingCapacity));
+            state.selectedBoardObject = null;
+            state.draftObjectId = null;
+            state.isDraggingInCanvas = false;
+            state.boardMode = IBoardMode.SELECTION;
+            state.selectedShape = null;
+        },
         deleteSelectedObjectAction(state) {
             const board = getActiveBoard(state);
             if (!board || !state.selectedBoardObject) {
@@ -713,6 +731,7 @@ export const {
     pointerMoved,
     pointerUp,
     objectTextUpdated,
+    applyGeneratedShapes,
     deleteSelectedObjectAction,
     exportRequested,
 } = WhiteBoardSlice.actions;

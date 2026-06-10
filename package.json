@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "debug:model": "playwright test tests/geometric-model-loading.spec.ts --project=chromium --headed",
+    "test:e2e": "playwright test",
     "lint": "eslint v2/src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
     "@reduxjs/toolkit": "^2.0.1",
     "jspdf": "^4.2.1",
     "react": "^18.2.0",
@@ -21,6 +24,7 @@
     "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/react-redux": "^7.1.33",
