@@ -26,6 +26,14 @@ The project highlights the ability to turn an interactive product idea into a po
 - Performance-conscious persistence with durable local storage and limits for board and element data.
 - Iterative feature development across a deprecated `v1` and active `v2` codebase.
 
+## Geometric Model
+
+- I have added a geometric model that picks the tokens from user chat
+- Currently the model is trained with an atleast on exisiting shape in the board(rookie mistake)
+- It is not perfect it fails sometimes if the instructions are not properly done
+- It currently supports all shapes in the whiteboard
+- TODO - I am currently training the model to understand text, length of line/arrow, and spacing context
+
 This repository is split into versioned app folders:
 
 - `v1`: deprecated snapshot of the original whiteboard.
