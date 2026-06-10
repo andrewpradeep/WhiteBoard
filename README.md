@@ -45,3 +45,5 @@ Run the active `v2` app from the repository root:
 npm install --legacy-peer-deps
 npm run dev
 ```
+
+Current status of the model : https://www.loom.com/share/2f9bf04b9979416ebadfb2be675ec037
