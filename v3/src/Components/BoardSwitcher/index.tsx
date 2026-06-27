@@ -75,6 +75,7 @@ const BoardSwitcher = () => {
                     aria-label="Create board"
                     className="board-tab-add"
                     data-testid="board-tab-add"
+                    data-tooltip="Create board"
                     onClick={() => dispatch(createBoardAction())}
                     type="button"
                 >

@@ -9,7 +9,7 @@ import {
     ITextBoxObject,
     IViewport,
 } from "../../Contracts/WhiteBoard";
-import { getCanvasPixelRatio, getStrokeWorldWidth } from "../viewport";
+import { DEFAULT_VIEWPORT, getCanvasPixelRatio, getStrokeWorldWidth } from "../viewport";
 import {
     getShapeAnchors,
     getShapeBounds,
@@ -26,6 +26,135 @@ import {
 import { drawClippedShapeText } from "../shapeText";
 
 export const SELECTION_PADDING = 8;
+export const EXPORT_PADDING_PX = 20;
+
+export interface BoardContentBounds {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
+}
+
+const expandBounds = (
+    bounds: BoardContentBounds,
+    padding: number
+): BoardContentBounds => ({
+    left: bounds.left - padding,
+    top: bounds.top - padding,
+    right: bounds.right + padding,
+    bottom: bounds.bottom + padding,
+    width: bounds.width + padding * 2,
+    height: bounds.height + padding * 2,
+});
+
+const mergeBounds = (
+    aggregate: BoardContentBounds | null,
+    next: BoardContentBounds
+): BoardContentBounds => {
+    if (!aggregate) {
+        return next;
+    }
+
+    const left = Math.min(aggregate.left, next.left);
+    const top = Math.min(aggregate.top, next.top);
+    const right = Math.max(aggregate.right, next.right);
+    const bottom = Math.max(aggregate.bottom, next.bottom);
+
+    return {
+        left,
+        top,
+        right,
+        bottom,
+        width: right - left,
+        height: bottom - top,
+    };
+};
+
+const getObjectExportBounds = (
+    boardObject: IBoardObject,
+    strokeWidth: number
+): BoardContentBounds | null => {
+    const strokePadding = strokeWidth / 2 + 1;
+
+    if (boardObject.type === IBoardShapes.LINE || boardObject.type === IBoardShapes.ARROW) {
+        const lineObject = boardObject as ILineObject;
+        const { start, end, control } = getLineGeometry(lineObject);
+        let left = Math.min(start.x, end.x, control.x);
+        let right = Math.max(start.x, end.x, control.x);
+        let top = Math.min(start.y, end.y, control.y);
+        let bottom = Math.max(start.y, end.y, control.y);
+
+        const showArrowHead =
+            (boardObject.type === IBoardShapes.ARROW || lineObject.fromAttachment) &&
+            (Math.abs(lineObject.dx) > 1 || Math.abs(lineObject.dy) > 1);
+
+        if (showArrowHead) {
+            const angle = getArrowEndAngle(lineObject);
+            const arrowHeadLength = Math.max(12, strokeWidth * 6);
+
+            for (const wingAngle of [angle - Math.PI / 6, angle + Math.PI / 6]) {
+                const wingX = end.x - arrowHeadLength * Math.cos(wingAngle);
+                const wingY = end.y - arrowHeadLength * Math.sin(wingAngle);
+                left = Math.min(left, wingX);
+                right = Math.max(right, wingX);
+                top = Math.min(top, wingY);
+                bottom = Math.max(bottom, wingY);
+            }
+        }
+
+        return expandBounds(
+            {
+                left,
+                top,
+                right,
+                bottom,
+                width: right - left,
+                height: bottom - top,
+            },
+            strokePadding
+        );
+    }
+
+    const shapeBounds = getShapeBounds(boardObject);
+    return expandBounds(
+        {
+            left: shapeBounds.left,
+            top: shapeBounds.top,
+            right: shapeBounds.right,
+            bottom: shapeBounds.bottom,
+            width: shapeBounds.right - shapeBounds.left,
+            height: shapeBounds.bottom - shapeBounds.top,
+        },
+        strokePadding
+    );
+};
+
+export const getBoardContentBounds = (
+    objects: IBoardObject[],
+    strokeWidth = getStrokeWorldWidth(DEFAULT_VIEWPORT, window.devicePixelRatio || 1)
+): BoardContentBounds | null => {
+    if (!objects.length) {
+        return null;
+    }
+
+    const preparedObjects = objects.map((boardObject) => {
+        if (boardObject.type === IBoardShapes.LINE || boardObject.type === IBoardShapes.ARROW) {
+            return {
+                ...boardObject,
+                ...resolveLineAttachments(boardObject as ILineObject, objects),
+            };
+        }
+
+        return boardObject;
+    });
+
+    return preparedObjects.reduce<BoardContentBounds | null>((aggregate, boardObject) => {
+        const bounds = getObjectExportBounds(boardObject, strokeWidth);
+        return bounds ? mergeBounds(aggregate, bounds) : aggregate;
+    }, null);
+};
 
 export type ResizeHandleType = "bottom-right" | "radius";
 
@@ -254,7 +383,7 @@ export const drawBoardObject = (
         case IBoardShapes.CONTAINER: {
             const containerObject = boardObject as IRectObject;
             canvasContext.save();
-            canvasContext.fillStyle = "rgba(0, 113, 227, 0.05)";
+            canvasContext.fillStyle = "rgba(0, 113, 227, 0.04)";
             canvasContext.fillRect(
                 containerObject.x,
                 containerObject.y,
@@ -262,7 +391,8 @@ export const drawBoardObject = (
                 containerObject.height
             );
             canvasContext.setLineDash([8, 6]);
-            canvasContext.strokeStyle = "#0071e3";
+            canvasContext.strokeStyle = "#000";
+            canvasContext.lineWidth = strokeWidth;
             canvasContext.strokeRect(
                 containerObject.x,
                 containerObject.y,
@@ -577,18 +707,32 @@ export const getDistanceOfPoints = (point1: IPlotPoint, point2: IPlotPoint) => {
 
 export const downloadBoardAsPng = ({
     objects,
-    width,
-    height,
     fileName,
 }: {
     objects: IBoardObject[];
-    width: number;
-    height: number;
     fileName: string;
 }) => {
     const exportCanvas = document.createElement("canvas");
-    exportCanvas.width = width;
-    exportCanvas.height = height;
+    const strokeWidth = getStrokeWorldWidth(DEFAULT_VIEWPORT, window.devicePixelRatio || 1);
+    const contentBounds = getBoardContentBounds(objects, strokeWidth);
+    const padding = EXPORT_PADDING_PX;
+
+    let exportWidth = padding * 2;
+    let exportHeight = padding * 2;
+    let viewport: IViewport = { scale: 1, offsetX: padding, offsetY: padding };
+
+    if (contentBounds) {
+        exportWidth = Math.max(1, Math.ceil(contentBounds.width + padding * 2));
+        exportHeight = Math.max(1, Math.ceil(contentBounds.height + padding * 2));
+        viewport = {
+            scale: 1,
+            offsetX: padding - contentBounds.left,
+            offsetY: padding - contentBounds.top,
+        };
+    }
+
+    exportCanvas.width = exportWidth;
+    exportCanvas.height = exportHeight;
     const exportContext = exportCanvas.getContext("2d");
 
     if (!exportContext) {
@@ -600,6 +744,7 @@ export const downloadBoardAsPng = ({
         canvasRef: exportCanvas,
         objects,
         includeGrid: false,
+        viewport,
     });
 
     const link = document.createElement("a");

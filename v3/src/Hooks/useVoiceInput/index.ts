@@ -6,6 +6,8 @@ import {
 } from "../../Services/SpeechRecognition/audioCapture";
 import {
     getSpeechTranscriptionErrorMessage,
+    isSpeechModelLoaded,
+    preloadSpeechModel,
     transcribeAudioSamples,
     type SpeechRecognitionProgress,
 } from "../../Services/SpeechRecognition/localSpeech";
@@ -41,6 +43,7 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
     const [interimTranscript, setInterimTranscript] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [processingLabel, setProcessingLabel] = useState("");
+    const [isLoadingSpeechModel, setIsLoadingSpeechModel] = useState(false);
     const [isSupported] = useState(() => isWebSpeechSupported() || isMicrophoneCaptureSupported());
 
     const captureRef = useRef<MicrophoneCapture | null>(null);
@@ -66,6 +69,23 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
     const resetWebSpeech = useCallback(() => {
         webSpeechRef.current?.stop(false);
         webSpeechRef.current = null;
+    }, []);
+
+    const ensureSpeechModelReady = useCallback(async () => {
+        if (isSpeechModelLoaded()) {
+            return;
+        }
+
+        setIsLoadingSpeechModel(true);
+        setProcessingLabel("Loading offline speech model…");
+
+        try {
+            await preloadSpeechModel((progress) => {
+                setProcessingLabel(formatProcessingLabel(progress));
+            });
+        } finally {
+            setIsLoadingSpeechModel(false);
+        }
     }, []);
 
     const resetVoiceSession = useCallback(() => {
@@ -96,7 +116,13 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
 
         try {
             const transcript = await transcribeAudioSamples(samples, (progress) => {
+                if (progress.status === "loading") {
+                    setIsLoadingSpeechModel(true);
+                }
                 setProcessingLabel(formatProcessingLabel(progress));
+                if (progress.status === "ready" || progress.status === "transcribing") {
+                    setIsLoadingSpeechModel(false);
+                }
             });
 
             setInterimTranscript(transcript);
@@ -109,6 +135,7 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
         } catch (transcriptionError) {
             setError(getSpeechTranscriptionErrorMessage(transcriptionError));
         } finally {
+            setIsLoadingSpeechModel(false);
             setStatus("idle");
             setProcessingLabel("");
         }
@@ -173,7 +200,13 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
                     preferOfflineRef.current = true;
                     resetWebSpeech();
                     setProcessingLabel("Browser speech unavailable. Switching to offline mode…");
-                    void startOfflineRecording();
+                    void ensureSpeechModelReady()
+                        .then(() => startOfflineRecording())
+                        .catch((loadError) => {
+                            setError(getSpeechTranscriptionErrorMessage(loadError));
+                            setStatus("idle");
+                            setProcessingLabel("");
+                        });
                     return;
                 }
 
@@ -192,7 +225,7 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
                 setStatus((current) => (current === "listening" ? "idle" : current));
             },
         });
-    }, [resetWebSpeech, startOfflineRecording]);
+    }, [ensureSpeechModelReady, resetWebSpeech, startOfflineRecording]);
 
     const stopListening = useCallback(() => {
         if (status !== "listening") {
@@ -235,8 +268,16 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
         }
 
         setProcessingLabel("Preparing offline speech model…");
-        await startOfflineRecording();
-    }, [isSupported, resetVoiceSession, startOfflineRecording, startWebSpeech, status]);
+
+        try {
+            await ensureSpeechModelReady();
+            await startOfflineRecording();
+        } catch (loadError) {
+            setError(getSpeechTranscriptionErrorMessage(loadError));
+            setStatus("idle");
+            setProcessingLabel("");
+        }
+    }, [ensureSpeechModelReady, isSupported, resetVoiceSession, startOfflineRecording, startWebSpeech, status]);
 
     useEffect(
         () => () => {
@@ -250,6 +291,7 @@ const useVoiceInput = (options?: UseVoiceInputOptions) => {
         interimTranscript,
         error,
         processingLabel,
+        isLoadingSpeechModel,
         isSupported,
         isListening: status === "listening",
         isProcessing: status === "processing",

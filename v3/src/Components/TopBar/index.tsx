@@ -83,6 +83,7 @@ const TopBar = () => {
             <div aria-label="Zoom" className="zoom-controls" role="group">
                 <button
                     aria-label="Zoom out"
+                    data-tooltip="Zoom out"
                     onClick={() => dispatch(zoomBy(-0.1))}
                     type="button"
                 >
@@ -93,6 +94,7 @@ const TopBar = () => {
                 </span>
                 <button
                     aria-label="Zoom in"
+                    data-tooltip="Zoom in"
                     onClick={() => dispatch(zoomBy(0.1))}
                     type="button"
                 >
@@ -100,6 +102,7 @@ const TopBar = () => {
                 </button>
                 <button
                     aria-label="Reset zoom"
+                    data-tooltip="Reset zoom"
                     onClick={() => dispatch(resetViewport())}
                     type="button"
                 >

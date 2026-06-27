@@ -7,6 +7,7 @@ import PenIcon from "../../assets/utility/pen.svg";
 import downloadIcon from "../../assets/utility/download.svg";
 import cursorPointerIcon from "../../assets/utility/cursor-pointer.svg";
 import textBoxIcon from "../../assets/utility/Textbox.svg";
+import eraserIcon from "../../assets/utility/eraser.svg";
 import { useState } from "react";
 import { IBoardMode, IBoardShapes } from "../../Contracts/WhiteBoard";
 import { exportRequested, toolSelected } from "../../Store/WhiteBoardStore";
@@ -79,7 +80,7 @@ const SideBar = () => {
         {
             label: "Erase",
             mode: IBoardMode.ERASER,
-            icon: null,
+            icon: eraserIcon,
             onClick: () => selectTool({ mode: IBoardMode.ERASER }),
         },
     ];
@@ -113,14 +114,11 @@ const SideBar = () => {
                     aria-label={tool.label}
                     className={`tool-button ${isToolSelected(tool) ? "selected" : ""}`}
                     data-testid={`tool-${tool.label.toLowerCase()}`}
+                    data-tooltip={tool.label}
                     onClick={tool.onClick}
                     type="button"
                 >
-                    {tool.icon ? (
-                        <Icon srcUrl={tool.icon} className="side-bar-icon" />
-                    ) : (
-                        <span className="eraser-tool-icon">⌫</span>
-                    )}
+                    <Icon srcUrl={tool.icon} className="side-bar-icon" />
                 </button>
                 {isShapesTool && isShapeListVisible && (
                     <ShapeList
@@ -146,6 +144,7 @@ const SideBar = () => {
                     aria-label="Export PNG"
                     className="tool-button"
                     data-testid="tool-export"
+                    data-tooltip="Export PNG"
                     onClick={() => dispatch(exportRequested())}
                     type="button"
                 >

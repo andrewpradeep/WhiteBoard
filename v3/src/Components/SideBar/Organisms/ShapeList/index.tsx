@@ -4,6 +4,7 @@ import { IBoardShapes } from "../../../../Contracts/WhiteBoard";
 import Icon from "../../../Icon";
 import CircleLogo from "../../../../assets/utility/circle.svg";
 import SquareLogo from "../../../../assets/utility/shapes.svg";
+import containerIcon from "../../../../assets/utility/container.svg";
 import { IShapeListProps } from "./interface";
 import useClickOutside from "../../../../Hooks/useClickOutside";
 import "./index.css";
@@ -37,6 +38,7 @@ const ShapeList: React.FC<IShapeListProps> = ({ clickOutside, onSelection }) => 
                 aria-label="Rectangle"
                 className="icon-container"
                 data-testid="shape-pick-rect"
+                data-tooltip="Rectangle"
                 onClick={handleShapePick(IBoardShapes.RECT)}
                 role="menuitem"
                 type="button"
@@ -47,6 +49,7 @@ const ShapeList: React.FC<IShapeListProps> = ({ clickOutside, onSelection }) => 
                 aria-label="Circle"
                 className="icon-container"
                 data-testid="shape-pick-circle"
+                data-tooltip="Circle"
                 onClick={handleShapePick(IBoardShapes.CIRCLE)}
                 role="menuitem"
                 type="button"
@@ -58,6 +61,7 @@ const ShapeList: React.FC<IShapeListProps> = ({ clickOutside, onSelection }) => 
                     aria-label={item.label}
                     className="icon-container shape-symbol-button"
                     data-testid={item.testId}
+                    data-tooltip={item.label}
                     key={item.shape}
                     onClick={handleShapePick(item.shape)}
                     role="menuitem"
@@ -68,13 +72,14 @@ const ShapeList: React.FC<IShapeListProps> = ({ clickOutside, onSelection }) => 
             ))}
             <button
                 aria-label="Container"
-                className="icon-container shape-symbol-button"
+                className="icon-container"
                 data-testid="shape-pick-container"
+                data-tooltip="Container"
                 onClick={handleShapePick(IBoardShapes.CONTAINER)}
                 role="menuitem"
                 type="button"
             >
-                ▢
+                <Icon srcUrl={containerIcon} className="side-bar-icon" />
             </button>
         </div>
     );

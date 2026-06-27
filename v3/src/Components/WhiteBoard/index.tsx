@@ -9,7 +9,7 @@ import useCanvasEventHandler from "../../Hooks/useCanvasEventHandler";
 import { deleteSelectedObjectAction, getActiveBoard, setCanvasPixelSize } from "../../Store/WhiteBoardStore";
 import { renderBoardFrame } from "../../Engine/CanvasEngine";
 
-const WhiteBoard = ({ width, height, className = "" }: IWhiteBoardProps) => {
+const WhiteBoard = ({ className = "" }: IWhiteBoardProps) => {
     const dispatch = useDispatch();
     const containerRef = useRef<HTMLDivElement>(null);
     const {
@@ -161,12 +161,10 @@ const WhiteBoard = ({ width, height, className = "" }: IWhiteBoardProps) => {
         if (exportRequest.id > 0 && activeBoard) {
             downloadBoardAsPng({
                 objects: activeBoard.ObjectList,
-                width,
-                height,
                 fileName: activeBoard.name,
             });
         }
-    }, [activeBoard, exportRequest, height, width]);
+    }, [activeBoard, exportRequest]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {

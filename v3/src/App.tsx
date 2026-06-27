@@ -18,9 +18,6 @@ import {
     saveWhiteBoardState,
 } from "./Utils/WhiteBoardPersistence";
 
-const BOARD_WIDTH = 2400;
-const BOARD_HEIGHT = 4800;
-
 function App() {
     const dispatch = useDispatch();
     const [hasLoadedPersistedState, setHasLoadedPersistedState] = useState(false);
@@ -101,11 +98,7 @@ function App() {
                 <div className="workspace-body">
                     <SideBar />
                     <div className="canvas-viewport">
-                        <WhiteBoard
-                            width={BOARD_WIDTH}
-                            height={BOARD_HEIGHT}
-                            className="white-board"
-                        />
+                        <WhiteBoard className="white-board" />
                     </div>
                 </div>
                 <Editor />

@@ -38,10 +38,30 @@
 
 @media (max-width: 900px) {
   .shape-list-container {
+    position: fixed;
     left: 50%;
     top: auto;
-    bottom: calc(100% + 0.5rem);
+    bottom: calc(var(--mobile-toolbar-inset) + var(--mobile-toolbar-block-size) + 0.625rem);
     transform: translateX(-50%);
     flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: max-content;
+    max-width: calc(100vw - 1.5rem);
+    z-index: 30;
+  }
+}
+
+@media (max-width: 520px) {
+  .shape-list-container {
+    max-width: calc(100vw - 1rem);
+    gap: 0.125rem;
+    padding: 0.25rem;
+  }
+
+  .shape-list-container .icon-container,
+  .shape-list-container .shape-symbol-button {
+    width: 2rem;
+    height: 2rem;
   }
 }

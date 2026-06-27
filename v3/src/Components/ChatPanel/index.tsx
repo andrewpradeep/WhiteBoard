@@ -2,6 +2,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "re
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../rootReducer";
 import { recordShapeBatch } from "../../Engine/DocumentStore";
+import useAssistantAvailable from "../../Hooks/useAssistantAvailable";
 import useVoiceInput from "../../Hooks/useVoiceInput";
 import { boardToNamedDslState } from "../../Services/GeometricModel/boardToDsl";
 import {
@@ -31,8 +32,10 @@ import {
     createPlacementGuideMessage,
 } from "./chatHistory";
 import GuideMessageContent from "./GuideMessageContent";
+import MicIcon from "./MicIcon";
 import ModelConsentCard from "./ModelConsentCard";
 import ModelLoadingOverlay from "./ModelLoadingOverlay";
+import SpeechLoadingOverlay from "./SpeechLoadingOverlay";
 import { hasModelDownloadConsent, setModelDownloadConsent } from "./modelConsent";
 import "./index.css";
 
@@ -48,6 +51,7 @@ const needsModelDownloadConsent = () => !isModelLoaded() && !hasModelDownloadCon
 
 const ChatPanel = () => {
     const dispatch = useDispatch();
+    const isAssistantAvailable = useAssistantAvailable();
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const placementGuideShownRef = useRef(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -77,12 +81,19 @@ const ChatPanel = () => {
         () => ({ viewport, canvasPixelSize }),
         [viewport, canvasPixelSize]
     );
-    const inputsLocked = isRunning || modelConsentPending || voice.isProcessing;
+    const inputsLocked =
+        isRunning || modelConsentPending || voice.isProcessing || voice.isLoadingSpeechModel;
     const canSubmit = draftCommand.trim().length > 0 && !inputsLocked;
 
     useEffect(() => {
-        dispatch(setShowElementNames(isOpen));
-    }, [dispatch, isOpen]);
+        dispatch(setShowElementNames(isOpen && isAssistantAvailable));
+    }, [dispatch, isAssistantAvailable, isOpen]);
+
+    useEffect(() => {
+        if (!isAssistantAvailable && isOpen) {
+            setIsOpen(false);
+        }
+    }, [isAssistantAvailable, isOpen]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -307,11 +318,19 @@ const ChatPanel = () => {
         appendAssistantMessage("Model download cancelled. Pattern and placement commands still work.");
     };
 
+    if (!isAssistantAvailable) {
+        return null;
+    }
+
     return (
-        <aside
-            aria-label="Assistant"
-            className={`chat-panel ${isOpen ? "open" : "collapsed"}`}
-        >
+        <>
+            {voice.isLoadingSpeechModel && (
+                <SpeechLoadingOverlay progressLabel={voice.processingLabel} />
+            )}
+            <aside
+                aria-label="Assistant"
+                className={`chat-panel ${isOpen ? "open" : "collapsed"}`}
+            >
             {isOpen ? (
                 <div
                     aria-busy={isRunning || modelConsentPending}
@@ -330,15 +349,16 @@ const ChatPanel = () => {
                                 aria-pressed={showElementNames}
                                 className={`chat-labels-toggle ${showElementNames ? "active" : ""}`}
                                 data-testid="toggle-element-names"
+                                data-tooltip={showElementNames ? "Hide labels" : "Show labels"}
                                 disabled={inputsLocked}
                                 onClick={() => dispatch(toggleShowElementNames())}
-                                title={showElementNames ? "Hide labels" : "Show labels"}
                                 type="button"
                             >
                                 Labels
                             </button>
                             <button
                                 aria-label="Collapse assistant"
+                                data-tooltip="Close"
                                 disabled={isRunning}
                                 onClick={() => setIsOpen(false)}
                                 type="button"
@@ -375,11 +395,12 @@ const ChatPanel = () => {
                             <button
                                 aria-label={voice.isListening ? "Stop listening" : "Start voice input"}
                                 className={`chat-mic ${voice.isListening ? "listening" : ""}`}
+                                data-tooltip={voice.isListening ? "Stop listening" : "Voice input"}
                                 disabled={inputsLocked}
                                 onClick={handleMicToggle}
                                 type="button"
                             >
-                                ○
+                                <MicIcon className="chat-mic-icon" />
                             </button>
                         )}
                         <input
@@ -394,7 +415,12 @@ const ChatPanel = () => {
                             type="text"
                             value={draftCommand}
                         />
-                        <button aria-label="Send command" disabled={!canSubmit} type="submit">
+                        <button
+                            aria-label="Send command"
+                            data-tooltip="Send"
+                            disabled={!canSubmit}
+                            type="submit"
+                        >
                             ↑
                         </button>
                     </form>
@@ -416,13 +442,15 @@ const ChatPanel = () => {
                     aria-label="Open assistant"
                     className="chat-launcher"
                     data-testid="assistant-launcher"
+                    data-tooltip="Assistant"
                     onClick={() => setIsOpen(true)}
                     type="button"
                 >
                     ◎
                 </button>
             )}
-        </aside>
+            </aside>
+        </>
     );
 };
 
