@@ -10,5 +10,14 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/v3/src/main.tsx"></script>
+    <script>
+      window.$zoho = window.$zoho || {};
+      $zoho.salesiq = $zoho.salesiq || { ready: function () {} };
+    </script>
+    <script
+      id="zsiqscript"
+      src="https://salesiq.zohopublic.com/widget?wc=siq777382f849e8da46342bf69bcdaa3c970140bb0c6c2ab0803f2dec651954ea32"
+      defer
+    ></script>
   </body>
 </html>
