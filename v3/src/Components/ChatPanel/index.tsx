@@ -33,9 +33,11 @@ import {
 } from "./chatHistory";
 import GuideMessageContent from "./GuideMessageContent";
 import MicIcon from "./MicIcon";
+import AssistantLauncherIcon from "./AssistantLauncherIcon";
 import ModelConsentCard from "./ModelConsentCard";
 import ModelLoadingOverlay from "./ModelLoadingOverlay";
 import SpeechLoadingOverlay from "./SpeechLoadingOverlay";
+import { hasOpenedAssistant, markAssistantOpened } from "./assistantDiscovery";
 import { hasModelDownloadConsent, setModelDownloadConsent } from "./modelConsent";
 import "./index.css";
 
@@ -55,6 +57,7 @@ const ChatPanel = () => {
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const placementGuideShownRef = useRef(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [showDiscoveryGlow, setShowDiscoveryGlow] = useState(() => !hasOpenedAssistant());
     const [draftCommand, setDraftCommand] = useState("");
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isRunning, setIsRunning] = useState(false);
@@ -302,6 +305,12 @@ const ChatPanel = () => {
         void voice.startListening();
     };
 
+    const handleOpenAssistant = () => {
+        markAssistantOpened();
+        setShowDiscoveryGlow(false);
+        setIsOpen(true);
+    };
+
     const handleModelConsentConfirm = () => {
         setModelDownloadConsent();
         setModelConsentPending(false);
@@ -440,13 +449,13 @@ const ChatPanel = () => {
             ) : (
                 <button
                     aria-label="Open assistant"
-                    className="chat-launcher"
+                    className={`chat-launcher ${showDiscoveryGlow ? "chat-launcher--discover" : ""}`}
                     data-testid="assistant-launcher"
                     data-tooltip="Assistant"
-                    onClick={() => setIsOpen(true)}
+                    onClick={handleOpenAssistant}
                     type="button"
                 >
-                    ◎
+                    <AssistantLauncherIcon className="chat-launcher-icon" />
                 </button>
             )}
             </aside>
