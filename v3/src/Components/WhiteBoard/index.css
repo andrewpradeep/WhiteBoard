@@ -1,0 +1,35 @@
+
+.white-board-shell {
+  width: 100%;
+  height: 100%;
+}
+
+.white-board-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.white-board-canvas.pan-mode {
+  cursor: grab;
+}
+
+.white-board-canvas.pan-mode:active {
+  cursor: grabbing;
+}
+
+.white-board-canvas.click-pointer {
+  cursor: crosshair;
+}
+
+.white-board-canvas.click-pointer:active {
+  cursor: crosshair;
+}
+
+.touch-off {
+  touch-action: none;
+}

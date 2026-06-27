@@ -1,34 +1,9 @@
-# WhiteBoard
+# WhiteBoard v1 — Deprecated
 
-Deprecated v1 snapshot. This folder is kept for reference while active development moves to `../v2`.
+> **This folder is deprecated.** It is a legacy prototype snapshot kept for reference only.
+>
+> Active development is in [`../v3/`](../v3/). See [../README.md](../README.md) for current documentation.
 
-This is an attempt to create an project similiar to a white board using the canvas api
+This is an early attempt to create a whiteboard using the Canvas API (shapes, collision detection, arrows, text, freehand draw).
 
-# Shapes
-
-Currently working on adding shapes to the canvas element and moving them using collision detection
-
-Here is an sample video of its working in localhost
-
-https://www.loom.com/share/28c7baea3a8e45bc9491bc133e685f50
-
-check this out in https://creamboard.netlify.app/
-
-RoadMap
-
-Completed
-1. Arrows
-2. Add Text
-3. draw
-
-Pending
-1. Resize
-2. Delete
-
-
-Update: 
- I have decided to go with a rectangular or box approach for each component except for lines
-
- Line will be separate component since it behaviour is completely different
- 
- 
+Live app: [creamboard.netlify.app](https://creamboard.netlify.app/)

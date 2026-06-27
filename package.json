@@ -5,23 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run download:speech-model",
     "build": "tsc && vite build",
-    "debug:model": "playwright test tests/geometric-model-loading.spec.ts --project=chromium --headed",
+    "debug:model": "playwright test tests/geometric-model.spec.ts --project=chromium --headed",
     "test:e2e": "playwright test",
-    "lint": "eslint v2/src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test:e2e:smoke": "playwright test --grep @smoke --project=chromium",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:model": "playwright test tests/geometric-model.spec.ts --project=chromium",
+    "lint": "eslint v3/src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "download:speech-model": "node scripts/download-speech-model.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.2.0",
     "@reduxjs/toolkit": "^2.0.1",
-    "jspdf": "^4.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-quill": "^2.0.0",
     "react-redux": "^9.0.4",
-    "redux": "^5.0.0",
-    "redux-devtools-extension": "^2.13.9",
-    "redux-thunk": "^3.1.0"
+    "redux": "^5.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",

@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Whisper model (~144 MB ONNX); fetched by npm run download:speech-model / prebuild
+public/models/whisper-tiny.en/

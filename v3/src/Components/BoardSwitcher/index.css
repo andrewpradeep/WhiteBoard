@@ -1,0 +1,48 @@
+.board-switcher {
+  display: flex;
+  align-items: center;
+}
+
+.board-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-subtle);
+}
+
+.board-tab-button,
+.board-tab-add {
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-size: 0.8125rem;
+}
+
+.board-tab.active .board-tab-button {
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.board-tab-add {
+  width: 2rem;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.board-rename-input {
+  min-width: 6rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: #fff;
+}

@@ -1,32 +1,9 @@
-# WhiteBoard
+# WhiteBoard v2 — Deprecated
 
-This is an attempt to create an project similiar to a white board using the canvas api
+> **This folder is deprecated.** It is a frozen pre-v3 snapshot kept for reference only.
+>
+> Active development is in [`../v3/`](../v3/). See [../README.md](../README.md) for current documentation.
 
-# Shapes
+This snapshot includes the early geometric model integration, workspace list/modal UI, and a simpler ChatPanel — before v3 added offline speech, connectors, containers, fuzzy matching, viewport-aware placement, and the full assistant UX.
 
-Currently working on adding shapes to the canvas element and moving them using collision detection
-
-Here is an sample video of its working in localhost
-
-https://www.loom.com/share/28c7baea3a8e45bc9491bc133e685f50
-
-check this out in https://creamboard.netlify.app/
-
-RoadMap
-
-Completed
-1. Arrows
-2. Add Text
-3. draw
-
-Pending
-1. Resize
-2. Delete
-
-
-Update: 
- I have decided to go with a rectangular or box approach for each component except for lines
-
- Line will be separate component since it behaviour is completely different
- 
- 
+Live app: [creamboard.netlify.app](https://creamboard.netlify.app/)
