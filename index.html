@@ -13,7 +13,9 @@
     <script type="module" src="/v3/src/main.tsx"></script>
     <script>
       window.$zoho = window.$zoho || {};
-      $zoho.salesiq = $zoho.salesiq || { ready: function () {} };
+      $zoho.salesiq = $zoho.salesiq || { ready: function () {
+        $zoho.salesiq.chatbutton.visible("show");
+      } };
     </script>
     <script
       id="zsiqscript"
